@@ -12,7 +12,8 @@
     "format": "prettier --write .",
     "dev:site": "vite dev",
     "dev:backend": "node backend/server.mjs",
-    "reset-password": "node backend/reset-password.mjs"
+    "reset-password": "node backend/reset-password.mjs",
+    "test:interests": "node tests/music-interests.integration.mjs"
   },
   "overrides": {
     "rolldown": "1.2.1"

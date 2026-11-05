@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { PenLine } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/hooks/use-session";
-import { fetchCommunities, fetchFeed, fetchSuggestedProfiles } from "@/lib/posts";
+import { fetchCommunities, fetchFeed, fetchPersonalizedFeed, fetchSuggestedProfiles } from "@/lib/posts";
 import { AppShell } from "@/components/melodica/app-shell";
 import { PostCard } from "@/components/melodica/post-card";
 import { CreatePostDialog } from "@/components/melodica/create-post-dialog";
@@ -63,7 +63,7 @@ function FeedPage() {
   const { data: posts, isLoading } = useQuery({
     queryKey: ["feed", tab, sort, userId, myCommunities, following],
     enabled: !!userId,
-    queryFn: () =>
+    queryFn: () => tab === "for-you" ? fetchPersonalizedFeed(sort) :
       fetchFeed({
         sort,
         userId,
@@ -100,7 +100,7 @@ function FeedPage() {
           </section>
 
           <section className="rounded-lg border bg-card p-4">
-            <h2 className="text-sm font-semibold text-ink">Músicos para seguir</h2>
+            <h2 className="text-sm font-semibold text-ink">Músicos para conhecer</h2>
             {musicians && musicians.length > 0 ? (
               <ul className="mt-3 space-y-3">
                 {musicians.map((profile) => (
@@ -140,6 +140,11 @@ function FeedPage() {
             {sort === "recent" ? "Mais recentes" : "Populares"}
           </Button>
         </div>
+
+        {tab === "for-you" ? <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-primary/20 bg-primary-soft/40 px-4 py-2.5 text-xs text-muted-foreground">
+          <span>✨ Recomendações com base em seus interesses, interações e novas descobertas.</span>
+          <Link to="/interests" className="font-semibold text-primary hover:underline">Editar interesses</Link>
+        </div> : null}
 
         <button
           type="button"

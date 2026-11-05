@@ -1,12 +1,12 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Home, Compass, Users, Bookmark, Settings, LogOut, Search, PenLine, UserRound } from "lucide-react";
+import { Home, Compass, Users, Bookmark, Settings, LogOut, PenLine, UserRound, MessageSquare } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMyProfile } from "@/hooks/use-session";
 import { MelodicaLogo, MelodicaMark } from "./logo";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { SearchBox } from "./search-box";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { accountTypeLabel, initials } from "@/lib/melodica";
 
@@ -15,11 +15,12 @@ const navItems = [
   { to: "/explore", label: "Explorar", icon: Compass },
   { to: "/communities", label: "Comunidades", icon: Users },
   { to: "/saved", label: "Salvos", icon: Bookmark },
+  { to: "/messages", label: "Mensagens", icon: MessageSquare },
   { to: "/profile", label: "Meu perfil", icon: UserRound },
   { to: "/settings", label: "Configurações", icon: Settings },
 ] as const;
 
-const mobileItems = navItems.slice(0, 5);
+const mobileItems = navItems.filter((item) => ["/feed","/explore","/messages","/profile"].includes(item.to));
 
 export function AppShell({
   children,
@@ -59,18 +60,7 @@ export function AppShell({
               <MelodicaMark />
             </span>
           </Link>
-          <div className="relative mx-auto w-full max-w-md">
-            <Search
-              className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground"
-              aria-hidden
-            />
-            <Input
-              type="search"
-              placeholder="Buscar músicos, comunidades, publicações"
-              aria-label="Buscar na Melodica"
-              className="bg-surface pl-9"
-            />
-          </div>
+          <SearchBox />
           {onCreatePost ? (
             <Button size="sm" onClick={onCreatePost} className="hidden sm:inline-flex">
               <PenLine className="h-4 w-4" />

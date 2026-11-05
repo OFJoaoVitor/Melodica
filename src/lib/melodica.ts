@@ -59,7 +59,8 @@ export function initials(name: string) {
 }
 
 export function timeAgo(iso: string) {
-  const diff = Date.now() - new Date(iso).getTime();
+  const normalized = iso.includes("T") ? iso : iso.replace(" ", "T") + "Z";
+  const diff = Date.now() - new Date(normalized).getTime();
   const minutes = Math.floor(diff / 60000);
   if (minutes < 1) return "agora";
   if (minutes < 60) return `${minutes} min`;
@@ -67,5 +68,5 @@ export function timeAgo(iso: string) {
   if (hours < 24) return `${hours} h`;
   const days = Math.floor(hours / 24);
   if (days < 30) return `${days} d`;
-  return new Date(iso).toLocaleDateString("pt-BR");
+  return new Date(normalized).toLocaleDateString("pt-BR");
 }

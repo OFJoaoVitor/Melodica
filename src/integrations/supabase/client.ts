@@ -29,6 +29,30 @@ async function request(path: string, init: RequestInit = {}) {
   if (!response.ok) throw new Error(value.message || `Erro ${response.status}`);
   return value;
 }
+/** API autenticada do backend SQLite local (mantém cookies HttpOnly). */
+export async function apiGet<T>(path: string): Promise<T> {
+  return request(path) as Promise<T>;
+}
+export async function apiPost<T>(path: string, body: unknown): Promise<T> {
+  return request(path, { method: "POST", body: JSON.stringify(body) }) as Promise<T>;
+}
+export async function apiPut<T>(path: string, body: unknown): Promise<T> {
+  return request(path, { method: "PUT", body: JSON.stringify(body) }) as Promise<T>;
+}
+/** Upload binário sem base64, para imagens, vídeos e áudios. */
+export async function uploadMedia(file: File): Promise<string> {
+  const response = await fetch(`${apiBase()}/uploads`, {
+    method: "POST", credentials: "include",
+    headers: { "Content-Type": file.type }, body: file,
+  });
+  let result: { path?: string; message?: string };
+  try { result = await response.json(); }
+  catch { throw new Error("O servidor não retornou uma resposta válida para o arquivo."); }
+  if (!response.ok || !result.path) throw new Error(result.message || "Não foi possível enviar o arquivo.");
+  return new URL(result.path, apiBase()).href;
+}
+export const uploadImage = uploadMedia;
+
 function wrapError(error: unknown): Error {
   return error instanceof Error ? error : new Error(String(error));
 }

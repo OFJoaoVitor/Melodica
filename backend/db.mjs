@@ -65,6 +65,18 @@ CREATE TABLE IF NOT EXISTS comments (
  parent_comment_id TEXT REFERENCES comments(id) ON DELETE CASCADE,
  content TEXT NOT NULL, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+CREATE TABLE IF NOT EXISTS messages (
+ id TEXT PRIMARY KEY,
+ sender_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+ recipient_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+ post_id TEXT REFERENCES posts(id) ON DELETE SET NULL,
+ content TEXT NOT NULL DEFAULT '',
+ created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ CHECK(sender_id <> recipient_id)
+);
+CREATE INDEX IF NOT EXISTS idx_messages_recipient ON messages(recipient_id,created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_messages_sender ON messages(sender_id,created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_comments_post_created ON comments(post_id,created_at);
 CREATE TABLE IF NOT EXISTS follows (
  id TEXT PRIMARY KEY, follower_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
  following_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -74,6 +86,24 @@ CREATE TABLE IF NOT EXISTS follows (
 CREATE INDEX IF NOT EXISTS idx_posts_created ON posts(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_members_user ON community_members(user_id);
 CREATE INDEX IF NOT EXISTS idx_follows_user ON follows(follower_id);
+`);
+// Migração segura para instalações antigas: mantém postagens, usuários e mídias.
+const postColumns = new Set(db.prepare('PRAGMA table_info(posts)').all().map(col=>col.name));
+for (const key of ['genres','instruments','artists','topics']) {
+  if (!postColumns.has(key)) db.exec(`ALTER TABLE posts ADD COLUMN ${key} TEXT NOT NULL DEFAULT '[]'`);
+}
+db.exec(`
+CREATE TABLE IF NOT EXISTS user_music_interests (
+ user_id TEXT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+ genres TEXT NOT NULL DEFAULT '[]',
+ instruments_played TEXT NOT NULL DEFAULT '[]',
+ instruments_learning TEXT NOT NULL DEFAULT '[]',
+ artists TEXT NOT NULL DEFAULT '[]',
+ topics TEXT NOT NULL DEFAULT '[]',
+ completed INTEGER NOT NULL DEFAULT 0 CHECK(completed IN (0,1)),
+ updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_interests_completed ON user_music_interests(completed);
 `);
 const seeds = [
  ['Rock','rock','Riffs, bandas e tudo que faz barulho do jeito certo.','Gênero','#2563eb'],

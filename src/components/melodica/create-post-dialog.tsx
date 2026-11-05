@@ -3,7 +3,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchCommunities } from "@/lib/posts";
+import { uploadPostMedia } from "@/lib/media-upload";
+import { PostMediaField } from "@/components/melodica/post-media-field";
 import type { PostType } from "@/lib/melodica";
+import { MUSIC_GENRES, MUSIC_INSTRUMENTS, MUSIC_TOPICS } from "@/lib/music-interests";
 import {
   Dialog,
   DialogContent,
@@ -46,20 +49,38 @@ export function CreatePostDialog({
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [postType, setPostType] = useState<PostType>("TEXT");
-  const [mediaUrl, setMediaUrl] = useState("");
+  const [mediaFile, setMediaFile] = useState<File | null>(null);
   const [communityId, setCommunityId] = useState(defaultCommunityId ?? "none");
+  const [genres, setGenres] = useState<string[]>([]);
+  const [instruments, setInstruments] = useState<string[]>([]);
+  const [topics, setTopics] = useState<string[]>([]);
+  const [artists, setArtists] = useState("");
+  function toggleCategory(value: string, list: string[], setter: (value: string[]) => void) {
+    if (list.includes(value)) setter(list.filter(v => v !== value));
+    else if (list.length >= 8) toast.error("Selecione no máximo 8 opções por categoria.");
+    else setter([...list, value]);
+  }
+  const categoryButton = (label: string, selected: boolean, onClick: () => void) => (
+    <button type="button" key={label} onClick={onClick} aria-pressed={selected} className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${selected ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card hover:border-primary/50"}`}>{label}</button>
+  );
 
   const { data: communities } = useQuery({ queryKey: ["communities"], queryFn: fetchCommunities });
 
   const createPost = useMutation({
     mutationFn: async () => {
+      if (postType !== "TEXT" && !mediaFile) throw new Error("Selecione um arquivo do computador antes de publicar.");
+      const mediaUrl = postType === "TEXT" ? null : await uploadPostMedia(mediaFile!, postType);
       const { error } = await supabase.from("posts").insert({
         author_id: userId,
         community_id: communityId === "none" ? null : communityId,
         title: title.trim(),
         content: content.trim() || null,
         post_type: postType,
-        media_url: postType === "TEXT" ? null : mediaUrl.trim() || null,
+        media_url: mediaUrl,
+        genres,
+        instruments,
+        topics,
+        artists: [...new Map(artists.split(",").map(v => v.replace(/\s+/g, " ").trim()).filter(Boolean).map(v => [v.toLocaleLowerCase("pt-BR"), v] as const)).values()],
       });
       if (error) throw error;
     },
@@ -69,16 +90,20 @@ export function CreatePostDialog({
       toast.success("Publicação criada.");
       setTitle("");
       setContent("");
-      setMediaUrl("");
+      setMediaFile(null);
+      setGenres([]);
+      setInstruments([]);
+      setTopics([]);
+      setArtists("");
       setPostType("TEXT");
       onOpenChange(false);
     },
-    onError: () => toast.error("Não foi possível publicar agora."),
+    onError: (error) => toast.error(error instanceof Error ? error.message : "Não foi possível publicar agora."),
   });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>Criar publicação</DialogTitle>
           <DialogDescription>Compartilhe algo com a sua comunidade musical.</DialogDescription>
@@ -90,6 +115,11 @@ export function CreatePostDialog({
             event.preventDefault();
             if (title.trim().length < 3) {
               toast.error("Dê um título com pelo menos 3 caracteres.");
+              return;
+            }
+            const artistValues = artists.split(",").map(v => v.trim()).filter(Boolean);
+            if (artistValues.length > 8 || artistValues.some(v => v.length > 80 || /[<>\r\n]/.test(v))) {
+              toast.error("Informe até 8 artistas, com no máximo 80 caracteres cada.");
               return;
             }
             createPost.mutate();
@@ -114,7 +144,7 @@ export function CreatePostDialog({
 
           <div className="space-y-2">
             <Label htmlFor="type">Tipo</Label>
-            <Select value={postType} onValueChange={(v) => setPostType(v as PostType)}>
+            <Select value={postType} onValueChange={(v) => { setPostType(v as PostType); setMediaFile(null); }}>
               <SelectTrigger id="type">
                 <SelectValue />
               </SelectTrigger>
@@ -143,17 +173,21 @@ export function CreatePostDialog({
             />
           </div>
 
-          {postType !== "TEXT" ? (
-            <div className="space-y-2">
-              <Label htmlFor="media">Link da mídia</Label>
-              <Input
-                id="media"
-                type="url"
-                placeholder="https://..."
-                value={mediaUrl}
-                onChange={(e) => setMediaUrl(e.target.value)}
-              />
+          <details className="rounded-xl border bg-surface/50 p-4" open>
+            <summary className="cursor-pointer text-sm font-semibold text-ink">Classifique sua publicação para alcançar quem gosta desse som</summary>
+            <p className="mt-2 text-xs leading-5 text-muted-foreground">Esses campos são opcionais e ajudam o algoritmo a recomendar seu conteúdo. Se não preencher, o texto e a comunidade da postagem ainda poderão ser considerados.</p>
+            <div className="mt-4 space-y-4">
+              <div><Label>Gêneros</Label><div className="mt-2 flex flex-wrap gap-1.5">{MUSIC_GENRES.map(v => categoryButton(v, genres.includes(v), () => toggleCategory(v, genres, setGenres)))}</div></div>
+              <div><Label>Instrumentos</Label><div className="mt-2 flex flex-wrap gap-1.5">{MUSIC_INSTRUMENTS.map(v => categoryButton(v, instruments.includes(v), () => toggleCategory(v, instruments, setInstruments)))}</div></div>
+              <div><Label>Assuntos musicais</Label><div className="mt-2 flex flex-wrap gap-1.5">{MUSIC_TOPICS.map(v => categoryButton(v, topics.includes(v), () => toggleCategory(v, topics, setTopics)))}</div></div>
+              <div className="space-y-2"><Label htmlFor="post-artists">Artistas e bandas (opcional)</Label>
+                <Input id="post-artists" value={artists} onChange={event => setArtists(event.target.value)} placeholder="Ex.: Kirk Franklin, Bruno Mars" maxLength={450} />
+                <p className="text-xs text-muted-foreground">Separe os nomes por vírgula (máximo 8).</p></div>
             </div>
+          </details>
+
+          {postType !== "TEXT" ? (
+            <PostMediaField type={postType} file={mediaFile} onChange={setMediaFile} disabled={createPost.isPending}/>
           ) : null}
 
           <DialogFooter>

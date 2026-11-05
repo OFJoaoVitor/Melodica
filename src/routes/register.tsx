@@ -18,8 +18,6 @@ import {
 import {
   ACCOUNT_TYPES,
   EXPERIENCE_LEVELS,
-  GENRES,
-  INSTRUMENTS,
   type AccountType,
   type ExperienceLevel,
 } from "@/lib/melodica";
@@ -51,8 +49,6 @@ const schema = z
     password: z.string().min(8, "Use pelo menos 8 caracteres"),
     confirm: z.string(),
     birthDate: z.string().min(1, "Informe a data de nascimento"),
-    genre: z.string().min(1, "Escolha um gênero"),
-    instrument: z.string().min(1, "Escolha um instrumento"),
     accountType: z.string().min(1),
     experience: z.string().min(1),
   })
@@ -74,8 +70,6 @@ function RegisterPage() {
     password: "",
     confirm: "",
     birthDate: "",
-    genre: "",
-    instrument: "",
     accountType: "MUSICIAN" as AccountType,
     experience: "BEGINNER" as ExperienceLevel,
   });
@@ -113,8 +107,6 @@ function RegisterPage() {
             display_name: form.displayName,
             account_type: form.accountType,
             experience_level: form.experience,
-            primary_instrument: form.instrument,
-            favorite_genre: form.genre,
             birth_date: form.birthDate,
           },
         },
@@ -126,8 +118,8 @@ function RegisterPage() {
         return;
       }
       await router.invalidate();
-      await navigate({ to: "/feed", replace: true });
-      toast.success("Conta criada. Bem-vindo à Melodica!");
+      await navigate({ to: "/interests", replace: true });
+      toast.success("Conta criada! Agora vamos conhecer seus gostos musicais.");
     } catch (error) {
       console.error("Erro ao cadastrar:", error);
       const message = authErrorMessage(error, "Não foi possível criar a conta agora.");
@@ -185,7 +177,7 @@ function RegisterPage() {
   return (
     <AuthShell
       title="Criar minha conta"
-      subtitle="Monte seu perfil musical em menos de um minuto."
+      subtitle="Crie sua conta. Seus interesses musicais vêm na próxima etapa."
       footer={
         <>
           Já tem conta?{" "}
@@ -254,36 +246,6 @@ function RegisterPage() {
             required
           />
         </Field>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Gênero musical principal" error={errors["genre"]} htmlFor="genre">
-            <Select value={form.genre} onValueChange={(v) => update("genre", v)}>
-              <SelectTrigger id="genre">
-                <SelectValue placeholder="Escolha" />
-              </SelectTrigger>
-              <SelectContent>
-                {GENRES.map((genre) => (
-                  <SelectItem key={genre} value={genre}>
-                    {genre}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
-          <Field label="Instrumento" error={errors["instrument"]} htmlFor="instrument">
-            <Select value={form.instrument} onValueChange={(v) => update("instrument", v)}>
-              <SelectTrigger id="instrument">
-                <SelectValue placeholder="Escolha" />
-              </SelectTrigger>
-              <SelectContent>
-                {INSTRUMENTS.map((item) => (
-                  <SelectItem key={item} value={item}>
-                    {item}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
-        </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Tipo de perfil" htmlFor="accountType">
             <Select
