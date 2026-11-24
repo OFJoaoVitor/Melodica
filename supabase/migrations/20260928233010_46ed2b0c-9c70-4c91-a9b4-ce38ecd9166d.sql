@@ -1,10 +1,9 @@
--- ENUMS
+
 CREATE TYPE public.account_type AS ENUM ('MUSICIAN','SINGER','BAND','PRODUCER','FAN');
 CREATE TYPE public.experience_level AS ENUM ('BEGINNER','INTERMEDIATE','ADVANCED','PROFESSIONAL');
 CREATE TYPE public.post_type AS ENUM ('TEXT','IMAGE','VIDEO','AUDIO');
 CREATE TYPE public.community_role AS ENUM ('MEMBER','MODERATOR','OWNER');
 
--- PROFILES
 CREATE TABLE public.profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   username TEXT NOT NULL UNIQUE,
@@ -30,7 +29,6 @@ CREATE POLICY "Profiles are viewable by everyone" ON public.profiles FOR SELECT 
 CREATE POLICY "Users update own profile" ON public.profiles FOR UPDATE TO authenticated USING (auth.uid() = id) WITH CHECK (auth.uid() = id);
 CREATE POLICY "Users insert own profile" ON public.profiles FOR INSERT TO authenticated WITH CHECK (auth.uid() = id);
 
--- COMMUNITIES
 CREATE TABLE public.communities (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
@@ -54,7 +52,6 @@ CREATE POLICY "Authenticated create communities" ON public.communities FOR INSER
 CREATE POLICY "Creator updates community" ON public.communities FOR UPDATE TO authenticated USING (auth.uid() = creator_id) WITH CHECK (auth.uid() = creator_id);
 CREATE POLICY "Creator deletes community" ON public.communities FOR DELETE TO authenticated USING (auth.uid() = creator_id);
 
--- COMMUNITY MEMBERS
 CREATE TABLE public.community_members (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   community_id UUID NOT NULL REFERENCES public.communities(id) ON DELETE CASCADE,
@@ -73,7 +70,6 @@ CREATE POLICY "Memberships viewable by everyone" ON public.community_members FOR
 CREATE POLICY "Users join communities" ON public.community_members FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Users leave communities" ON public.community_members FOR DELETE TO authenticated USING (auth.uid() = user_id);
 
--- POSTS
 CREATE TABLE public.posts (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   author_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
@@ -98,7 +94,6 @@ CREATE POLICY "Users create own posts" ON public.posts FOR INSERT TO authenticat
 CREATE POLICY "Users update own posts" ON public.posts FOR UPDATE TO authenticated USING (auth.uid() = author_id) WITH CHECK (auth.uid() = author_id);
 CREATE POLICY "Users delete own posts" ON public.posts FOR DELETE TO authenticated USING (auth.uid() = author_id);
 
--- POST VOTES
 CREATE TABLE public.post_votes (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   post_id UUID NOT NULL REFERENCES public.posts(id) ON DELETE CASCADE,
@@ -115,7 +110,6 @@ CREATE POLICY "Votes viewable by everyone" ON public.post_votes FOR SELECT USING
 CREATE POLICY "Users vote" ON public.post_votes FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Users remove own vote" ON public.post_votes FOR DELETE TO authenticated USING (auth.uid() = user_id);
 
--- COMMENTS
 CREATE TABLE public.comments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   post_id UUID NOT NULL REFERENCES public.posts(id) ON DELETE CASCADE,
@@ -135,7 +129,6 @@ CREATE POLICY "Users create own comments" ON public.comments FOR INSERT TO authe
 CREATE POLICY "Users update own comments" ON public.comments FOR UPDATE TO authenticated USING (auth.uid() = author_id) WITH CHECK (auth.uid() = author_id);
 CREATE POLICY "Users delete own comments" ON public.comments FOR DELETE TO authenticated USING (auth.uid() = author_id);
 
--- SAVED POSTS
 CREATE TABLE public.saved_posts (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
@@ -150,7 +143,6 @@ CREATE POLICY "Users see own saved posts" ON public.saved_posts FOR SELECT TO au
 CREATE POLICY "Users save posts" ON public.saved_posts FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Users unsave posts" ON public.saved_posts FOR DELETE TO authenticated USING (auth.uid() = user_id);
 
--- FOLLOWS
 CREATE TABLE public.follows (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   follower_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
@@ -169,7 +161,6 @@ CREATE POLICY "Follows viewable by everyone" ON public.follows FOR SELECT USING 
 CREATE POLICY "Users follow" ON public.follows FOR INSERT TO authenticated WITH CHECK (auth.uid() = follower_id);
 CREATE POLICY "Users unfollow" ON public.follows FOR DELETE TO authenticated USING (auth.uid() = follower_id);
 
--- NEW USER TRIGGER
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -208,7 +199,6 @@ CREATE TRIGGER on_auth_user_created
 AFTER INSERT ON auth.users
 FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
--- MEMBER COUNT MAINTENANCE
 CREATE OR REPLACE FUNCTION public.sync_member_count()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -230,7 +220,6 @@ CREATE TRIGGER trg_member_count
 AFTER INSERT OR DELETE ON public.community_members
 FOR EACH ROW EXECUTE FUNCTION public.sync_member_count();
 
--- SEED COMMUNITIES (DEMO)
 INSERT INTO public.communities (name, slug, description, category, accent, member_count, is_seed) VALUES
 ('Rock','rock','Riffs, bandas e tudo que faz barulho do jeito certo.','Gênero','#2563eb',1284,true),
 ('Guitarra','guitarra','Técnica, pedais, tons e solos. Para quem vive de seis cordas.','Instrumento','#1d4ed8',962,true),

@@ -55,13 +55,13 @@ function InterestsPage() {
           initial = { ...stored, ...parsed, completed: stored.completed };
         }
       }
-    } catch { /* Dado local inválido: usar preferências persistidas. */ }
+    } catch {  }
     setDraft(initial);
   }, [stored, userId, key, draft]);
   useEffect(() => {
     if (!draft || !key) return;
     try { localStorage.setItem(key, JSON.stringify(draft)); }
-    catch { /* O cadastro continua funcionando sem armazenamento local. */ }
+    catch {  }
   }, [draft, key]);
 
   const save = useMutation({
@@ -70,7 +70,7 @@ function InterestsPage() {
       return saveMusicInterests(draft);
     },
     onSuccess: async () => {
-      try { localStorage.removeItem(key); } catch { /* Sem efeito no cadastro. */ }
+      try { localStorage.removeItem(key); } catch {  }
       await client.invalidateQueries({ queryKey: ["music-interests"] });
       await client.invalidateQueries({ queryKey: ["feed"] });
       await router.invalidate();
@@ -127,16 +127,16 @@ function InterestsPage() {
         </div>
       </header>
       <main className="mx-auto max-w-5xl px-4 py-8 sm:px-8 sm:py-12">
-        <div className="mb-8 overflow-hidden rounded-2xl bg-[#080e20] px-6 py-7 text-white shadow-xl sm:px-10 sm:py-9">
+        <div className="mb-8 overflow-hidden rounded-[18px] bg-[#193446] px-6 py-7 text-white sm:px-10 sm:py-9">
           <div className="flex items-start gap-4">
-            <div className="rounded-2xl bg-cyan-400/15 p-3 text-cyan-300"><Headphones className="h-7 w-7" /></div>
-            <div className="min-w-0"><p className="mb-1 text-xs font-semibold uppercase tracking-[0.22em] text-cyan-300">A música conecta</p>
+            <div className="rounded-xl bg-white/10 p-3 text-[#8ed4f0]"><Headphones className="h-7 w-7" /></div>
+            <div className="min-w-0"><p className="mb-1 text-xs font-semibold uppercase tracking-[0.12em] text-[#8ed4f0]">A música conecta</p>
               <h1 className="font-display text-2xl font-bold sm:text-4xl">Descubra sua Melodica!</h1>
               <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base">Conte um pouco sobre seus gostos musicais para personalizarmos sua experiência. Selecione seus estilos, instrumentos e artistas favoritos para descobrir conteúdos e músicos que combinam com você.</p>
             </div>
           </div>
         </div>
-        <section className="rounded-2xl border bg-card p-5 shadow-sm sm:p-8" aria-label="Personalização musical">
+        <section className="rounded-[18px] border bg-card p-5 sm:p-8" aria-label="Personalização musical">
           <div className="mb-8">
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><span className="text-sm font-semibold text-foreground">Etapa {step + 1} de 5</span><span className="text-xs text-muted-foreground">{Math.round(((step + 1) / 5) * 100)}% · {draft ? selectedCount(draft) : 0} interesses selecionados</span></div>
             <div className="h-2 overflow-hidden rounded-full bg-muted" role="progressbar" aria-label="Progresso da personalização" aria-valuenow={step + 1} aria-valuemin={0} aria-valuemax={5}><div className="h-full rounded-full bg-primary transition-all duration-300" style={{ width: `${((step + 1) / 5) * 100}%` }} /></div>

@@ -1,4 +1,4 @@
-/** Testes da funcionalidade de DM e da lista de pessoas seguidas; banco temporário isolado. */
+ 
 import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, copyFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -41,7 +41,7 @@ try {
   const carla=await register('carla_music');
   assert.equal((await request('/following','GET')).status,401);
   assert.deepEqual((await request('/following','GET',undefined,ana.cookie)).body.following,[]);
-  // Ana segue Bruno; Bruno não segue Ana nem Carla.
+   
   const follow=await request('/data/follows','POST',{follower_id:ana.id,following_id:bruno.id},ana.cookie);
   assert.equal(follow.status,201,JSON.stringify(follow.body));
   const contacts=(await request('/following','GET',undefined,ana.cookie)).body.following;
@@ -63,16 +63,32 @@ try {
   assert.equal((await request('/conversations','GET',undefined,ana.cookie)).body.conversations[0].other_id,bruno.id);
   assert.equal((await request('/conversations','GET',undefined,bruno.cookie)).body.conversations[0].other_id,ana.id);
   assert.equal((await request('/conversations','GET',undefined,carla.cookie)).body.conversations.length,0);
+  const createdPost=await request('/data/posts','POST',{
+    author_id:ana.id,title:'Groove novo para compartilhar',content:'Confira meu último som!'
+  },ana.cookie);
+  assert.equal(createdPost.status,201,JSON.stringify(createdPost.body));
+  const postId=createdPost.body.data.id;
+  const shared=await request('/messages','POST',{
+    recipient_id:bruno.id,post_id:postId,content:'Acho que você vai curtir essa música!'
+  },ana.cookie);
+  assert.equal(shared.status,201,JSON.stringify(shared.body));
+  assert.equal(shared.body.message.post_id,postId);
+  const sharedHistory=(await request(`/messages?with=${ana.id}`,'GET',undefined,bruno.cookie)).body.messages;
+  assert.equal(sharedHistory.at(-1).post_id,postId,'Post aparece na conversa privada');
+  assert.equal(sharedHistory.at(-1).post_title,'Groove novo para compartilhar','Mensagem tem prévia clicável');
+  assert.equal(sharedHistory.at(-1).content,'Acho que você vai curtir essa música!');
+  const recipientInbox=(await request('/notifications','GET',undefined,bruno.cookie)).body;
+  assert.ok(recipientInbox.notifications.some(n=>n.post_id===postId && n.kind==='MESSAGE'),'Destinatário recebe notificação');
   assert.equal((await request(`/messages?with=${bruno.id}`,'GET',undefined,carla.cookie)).body.messages.length,0);
   assert.equal((await request('/messages','POST',{recipient_id:ana.id,content:'teste'},ana.cookie)).status,400);
   assert.equal((await request('/messages','POST',{recipient_id:bruno.id,content:'  '},ana.cookie)).status,400);
   assert.equal((await request('/messages','POST',{recipient_id:bruno.id,content:'x'.repeat(2001)},ana.cookie)).status,400);
-  // Remover seguir não remove as mensagens já trocadas.
+   
   const filters=encodeURIComponent(JSON.stringify([{column:'follower_id',operator:'eq',value:ana.id},{column:'following_id',operator:'eq',value:bruno.id}]));
   assert.equal((await request(`/data/follows?filters=${filters}`,'DELETE',undefined,ana.cookie)).status,200);
   assert.equal((await request('/following','GET',undefined,ana.cookie)).body.following.length,0);
-  assert.equal((await request(`/messages?with=${bruno.id}`,'GET',undefined,ana.cookie)).body.messages.length,2);
-  console.log('✔ DMs: seguidores, envio, resposta, histórico, autenticação e privacidade aprovados.');
+  assert.equal((await request(`/messages?with=${bruno.id}`,'GET',undefined,ana.cookie)).body.messages.length,3);
+  console.log('✔ DMs: seguidores, compartilhamento de posts, notificações, histórico, autenticação e privacidade aprovados.');
 } finally {
   server.kill('SIGTERM');
   await sleep(180);

@@ -20,7 +20,7 @@ export function NotificationsPopover({ inbox, loading, error }: { inbox?: Notifi
   async function openNotification(item: MelodicaNotification) {
     if (!item.read_at) {
       try { await mark.mutateAsync(item.id); }
-      catch { /* a navegação ainda deve funcionar */ }
+      catch {   }
     }
     setOpen(false);
     if (item.kind === "MESSAGE") {

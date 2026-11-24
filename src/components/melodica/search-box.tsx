@@ -20,11 +20,11 @@ export function SearchBox() {
     <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden/>
     <Input type="search" value={text} onFocus={()=>setOpen(true)} onChange={e=>{setText(e.target.value);setOpen(true);}}
       placeholder="Buscar músicos e publicações" aria-label="Buscar na Melodica" autoComplete="off" aria-expanded={active}
-      className="bg-surface pl-9 pr-9"/>
+      className="h-10 rounded-xl border-border/70 bg-muted/65 pl-9 pr-9 text-sm focus-visible:bg-card"/>
     {text && <Button size="icon" variant="ghost" aria-label="Limpar pesquisa" onClick={close} className="absolute right-0 top-0 h-full w-9"><X className="h-4 w-4"/></Button>}
     {active && <>
       <button type="button" aria-label="Fechar resultados" onClick={()=>setOpen(false)} className="fixed inset-0 z-40 cursor-default bg-transparent"/>
-      <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-[70vh] overflow-y-auto rounded-lg border bg-popover p-3 shadow-lg" role="region" aria-label="Resultados da pesquisa">
+      <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-[70vh] overflow-y-auto rounded-[16px] border bg-popover p-3 shadow-[0_16px_40px_rgba(21,39,51,.12)]" role="region" aria-label="Resultados da pesquisa">
         {isFetching&&<p className="text-xs text-muted-foreground">Pesquisando...</p>}
         {error&&<p role="alert" className="text-sm text-destructive">Não foi possível buscar. Verifique sua conexão.</p>}
         {!isFetching&&!error&&data&&<>

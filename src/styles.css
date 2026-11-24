@@ -4,10 +4,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/*
- * MELODICA — design system (Strum Inc)
- * Azul, preto, cinza e branco. Visual claro, editorial, musical.
- */
+ 
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
@@ -18,8 +15,8 @@
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
 
-  --font-display: "Sora", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Avenir Next", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Segoe UI", ui-sans-serif, system-ui, sans-serif;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -64,233 +61,180 @@
   --shadow-card: 0 1px 3px oklch(0.2 0.03 260 / 0.06), 0 8px 24px oklch(0.2 0.03 260 / 0.04);
 }
 
+
 :root {
   --radius: 0.75rem;
-
-  --background: oklch(1 0 0);
-  --surface: oklch(0.977 0.003 255);
-  --foreground: oklch(0.19 0.015 260);
-  --ink: oklch(0.13 0.015 260);
-
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.19 0.015 260);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.19 0.015 260);
-
-  --primary: oklch(0.54 0.19 262);
-  --primary-foreground: oklch(0.99 0 0);
-  --primary-soft: oklch(0.955 0.025 262);
-
-  --secondary: oklch(0.965 0.005 255);
-  --secondary-foreground: oklch(0.24 0.018 260);
-
-  --muted: oklch(0.968 0.004 255);
-  --muted-foreground: oklch(0.52 0.015 258);
-
-  --accent: oklch(0.955 0.025 262);
-  --accent-foreground: oklch(0.42 0.16 262);
-
-  --destructive: oklch(0.58 0.21 25);
-  --destructive-foreground: oklch(0.99 0 0);
-  --success: oklch(0.63 0.15 155);
-  --warning: oklch(0.78 0.15 80);
-
-  --border: oklch(0.922 0.006 255);
-  --input: oklch(0.922 0.006 255);
-  --ring: oklch(0.54 0.19 262);
-
-  --chart-1: oklch(0.54 0.19 262);
-  --chart-2: oklch(0.65 0.14 240);
-  --chart-3: oklch(0.42 0.16 262);
-  --chart-4: oklch(0.75 0.09 250);
-  --chart-5: oklch(0.3 0.05 260);
-
-  --sidebar: oklch(1 0 0);
-  --sidebar-foreground: oklch(0.19 0.015 260);
-  --sidebar-primary: oklch(0.54 0.19 262);
-  --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.965 0.005 255);
-  --sidebar-accent-foreground: oklch(0.24 0.018 260);
-  --sidebar-border: oklch(0.922 0.006 255);
-  --sidebar-ring: oklch(0.54 0.19 262);
+  --background: #ffffff;
+  --surface: #f6f8fa;
+  --foreground: #253240;
+  --ink: #182734;
+  --card: #ffffff;
+  --card-foreground: #253240;
+  --popover: #ffffff;
+  --popover-foreground: #253240;
+  --primary: #147fae;
+  --primary-foreground: #ffffff;
+  --primary-soft: #eaf5fb;
+  --secondary: #f0f4f6;
+  --secondary-foreground: #243541;
+  --muted: #f1f4f6;
+  --muted-foreground: #71808d;
+  --accent: #eaf5fb;
+  --accent-foreground: #146f9b;
+  --destructive: #cf3d47;
+  --destructive-foreground: #ffffff;
+  --success: #258568;
+  --warning: #be812a;
+  --border: #e5eaed;
+  --input: #dce3e8;
+  --ring: #258db8;
+  --chart-1: #147fae;
+  --chart-2: #3d9bc1;
+  --chart-3: #23465d;
+  --chart-4: #8ac4dc;
+  --chart-5: #6393a8;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #253240;
+  --sidebar-primary: #147fae;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #eaf5fb;
+  --sidebar-accent-foreground: #146f9b;
+  --sidebar-border: #e5eaed;
+  --sidebar-ring: #258db8;
 }
-
 .dark {
-  --background: oklch(0.16 0.014 260);
-  --surface: oklch(0.19 0.015 260);
-  --foreground: oklch(0.97 0.003 255);
-  --ink: oklch(0.99 0 0);
-
-  --card: oklch(0.2 0.015 260);
-  --card-foreground: oklch(0.97 0.003 255);
-  --popover: oklch(0.2 0.015 260);
-  --popover-foreground: oklch(0.97 0.003 255);
-
-  --primary: oklch(0.63 0.18 262);
-  --primary-foreground: oklch(0.14 0.01 260);
-  --primary-soft: oklch(0.27 0.05 262);
-
-  --secondary: oklch(0.25 0.017 260);
-  --secondary-foreground: oklch(0.97 0.003 255);
-
-  --muted: oklch(0.25 0.017 260);
-  --muted-foreground: oklch(0.7 0.015 258);
-
-  --accent: oklch(0.27 0.05 262);
-  --accent-foreground: oklch(0.85 0.09 262);
-
-  --destructive: oklch(0.65 0.2 25);
-  --destructive-foreground: oklch(0.99 0 0);
-  --success: oklch(0.7 0.14 155);
-  --warning: oklch(0.8 0.14 80);
-
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 14%);
-  --ring: oklch(0.63 0.18 262);
-
-  --sidebar: oklch(0.18 0.014 260);
-  --sidebar-foreground: oklch(0.97 0.003 255);
-  --sidebar-primary: oklch(0.63 0.18 262);
-  --sidebar-primary-foreground: oklch(0.14 0.01 260);
-  --sidebar-accent: oklch(0.25 0.017 260);
-  --sidebar-accent-foreground: oklch(0.97 0.003 255);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.63 0.18 262);
+  --background: #151c23;
+  --surface: #10171e;
+  --foreground: #e3eaf0;
+  --ink: #f2f7fa;
+  --card: #1b252e;
+  --card-foreground: #e3eaf0;
+  --popover: #202c35;
+  --popover-foreground: #e3eaf0;
+  --primary: #59b9e1;
+  --primary-foreground: #102632;
+  --primary-soft: #203c4e;
+  --secondary: #24323c;
+  --secondary-foreground: #e3eaf0;
+  --muted: #24313b;
+  --muted-foreground: #9cacb8;
+  --accent: #234254;
+  --accent-foreground: #a0ddf5;
+  --destructive: #ff777d;
+  --destructive-foreground: #231519;
+  --success: #65c49e;
+  --warning: #e5b477;
+  --border: #32404a;
+  --input: #3d4b56;
+  --ring: #59b9e1;
+  --sidebar: #1b252e;
+  --sidebar-foreground: #e3eaf0;
+  --sidebar-primary: #59b9e1;
+  --sidebar-primary-foreground: #102632;
+  --sidebar-accent: #234254;
+  --sidebar-accent-foreground: #a0ddf5;
+  --sidebar-border: #32404a;
+  --sidebar-ring: #59b9e1;
 }
 
 @layer base {
-  * {
-    border-color: var(--color-border);
-  }
-
+  * { border-color: var(--border); }
+  html { scroll-behavior: smooth; }
   body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
+    background: var(--background);
+    color: var(--foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
-
-  h1,
-  h2,
-  h3,
-  h4 {
+  h1, h2, h3, h4 {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
+    letter-spacing: -0.03em;
   }
-
-  :focus-visible {
-    outline: 2px solid var(--color-ring);
-    outline-offset: 2px;
-  }
+  :focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
+  ::selection { background: var(--primary-soft); color: var(--ink); }
 }
 
-/* Onda sonora decorativa, discreta */
-@utility soundwave {
+.melodica-shell { background: var(--surface); }
+.melodica-topbar { border-color: var(--border); }
+.melodica-sidebar { z-index: 30; border-color: var(--border); }
+.melodica-nav-link { border: 1px solid transparent; }
+.melodica-nav-link:hover { background: var(--muted); }
+.melodica-nav-active, .melodica-nav-active:hover {
+  background: var(--primary-soft);
+  color: var(--primary);
+  border-color: transparent;
+}
+.melodica-create-button { box-shadow: none; }
+.melodica-mascot { animation: none; }
+.melodica-kicker {
   display: flex;
-  align-items: flex-end;
-  gap: 3px;
-
-  & span {
-    display: block;
-    width: 3px;
-    border-radius: 2px;
-    background: var(--color-primary);
-    opacity: 0.85;
-    animation: melodica-wave 1.4s ease-in-out infinite;
-  }
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--primary);
+  font-size: 0.69rem;
+  font-weight: 700;
+  letter-spacing: 0.095em;
 }
-
-@keyframes melodica-wave {
-  0%,
-  100% {
-    transform: scaleY(0.4);
-  }
-  50% {
-    transform: scaleY(1);
-  }
-}
-
-@utility grid-fade {
-  background-image:
-    linear-gradient(to right, var(--color-border) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--color-border) 1px, transparent 1px);
-  background-size: 64px 64px;
-  mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, #000 30%, transparent 75%);
-}
-
-/* A mascote da Melodica vibra suavemente como se estivesse emitindo som. */
-.melodica-mascot {
-  animation: melodica-mascot-vibrate 95ms ease-in-out infinite alternate;
-  transform-origin: 50% 78%;
-  will-change: transform;
-}
-
-@keyframes melodica-mascot-vibrate {
-  from { transform: translateX(-1.5px) rotate(-1.1deg) scale(1.015); }
-  to { transform: translateX(1.5px) rotate(1.1deg) scale(0.985); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .melodica-mascot { animation: none; }
-}
-
-/* Melodica: superfícies com ritmo visual — sem mudar a paleta azul original. */
-.melodica-shell {
-  background:
-    radial-gradient(ellipse 620px 420px at 4% 0%, color-mix(in oklch, var(--primary-soft) 65%, transparent), transparent 75%),
-    radial-gradient(ellipse 650px 320px at 100% 42%, color-mix(in oklch, var(--primary-soft) 36%, transparent), transparent 78%),
-    var(--surface);
-}
-.melodica-topbar { box-shadow: 0 1px 0 color-mix(in oklch, var(--primary) 9%, transparent); }
-.melodica-topbar::after {
-  content:""; position:absolute; left:0; right:0; bottom:-1px; height:1px;
-  background:linear-gradient(90deg,transparent 3%,var(--primary) 28%,transparent 65%);opacity:.26;pointer-events:none;
-}
-.melodica-kicker { display:flex;align-items:center;gap:.45rem;color:var(--primary);font-size:.65rem;font-weight:800;letter-spacing:.17em; }
-.melodica-nav-link { position:relative; }
-.melodica-nav-active::before { content:"";position:absolute;left:0;top:25%;bottom:25%;width:3px;border-radius:6px;background:var(--primary); }
-.melodica-panel, .melodica-post-card {box-shadow:var(--shadow-soft);}
-.melodica-panel:hover, .melodica-post-card:hover {border-color:color-mix(in oklch,var(--primary) 26%,var(--border));box-shadow:var(--shadow-card);transform:translateY(-1px);}
-.melodica-composer {box-shadow:var(--shadow-soft);}
-.melodica-composer:hover {box-shadow:var(--shadow-card);transform:translateY(-1px);}
-.melodica-messenger {box-shadow:0 16px 45px color-mix(in oklch,var(--primary) 7%,transparent);}
-.melodica-contact:hover {transform:translateX(2px);}
-.melodica-contact-list, .melodica-message-list {scrollbar-width:thin;scrollbar-color:color-mix(in oklch,var(--primary) 35%,transparent) transparent;}
-@media (prefers-reduced-motion:reduce) { .melodica-panel:hover,.melodica-post-card:hover,.melodica-composer:hover,.melodica-contact:hover {transform:none;} }
-
-/* Versão Sessions: editorial musical sem banners promocionais. */
-.melodica-page-heading { position:relative; padding-left:1.1rem; }
-.melodica-page-heading::before {
-  content:""; position:absolute;left:0;top:.15rem;bottom:.15rem;width:4px;
-  border-radius:99px;background:linear-gradient(180deg,var(--primary),color-mix(in oklch,var(--primary) 25%,transparent));
-}
-.melodica-page-heading::after {
-  content:"";display:block;margin-top:1.15rem;height:1px;width:100%;
-  background:linear-gradient(90deg,color-mix(in oklch,var(--primary) 34%,var(--border)),var(--border) 65%,transparent);
-}
-.melodica-topbar { border-bottom-color:color-mix(in oklch,var(--primary) 12%,var(--border)); }
-.melodica-nav-link {border:1px solid transparent; transition:background .18s,border-color .18s,transform .18s;}
-.melodica-nav-link:hover { transform:translateX(2px);border-color:color-mix(in oklch,var(--primary) 12%,var(--border)); }
-.melodica-nav-active { background:var(--primary-soft);border-color:color-mix(in oklch,var(--primary) 18%,var(--border)); }
+.melodica-page-heading { padding: 0; }
+.melodica-page-heading::before, .melodica-page-heading::after { display: none; }
+.melodica-panel, .melodica-post-card { box-shadow: none; }
+.melodica-panel { transition: border-color .18s ease, background-color .18s ease; }
+.melodica-panel:hover { border-color: color-mix(in srgb, var(--primary) 24%, var(--border)); }
 .melodica-post-card {
-  position:relative;overflow:hidden;border-radius:1.1rem;
-  background-image:linear-gradient(135deg,color-mix(in oklch,var(--primary) 2.5%,transparent),transparent 43%);
+  border: 1px solid var(--border);
+  background: var(--card);
+  border-radius: 18px;
+  transition: border-color .18s ease;
 }
-.melodica-post-card::before {
-  content:"";position:absolute;top:0;left:0;bottom:0;width:2px;
-  background:var(--primary);opacity:0;transition:opacity .2s;
+.melodica-post-card:hover { border-color: color-mix(in srgb, var(--primary) 19%, var(--border)); }
+.melodica-composer { transition: border-color .18s ease, background-color .18s ease; }
+.melodica-composer:hover { border-color: color-mix(in srgb, var(--primary) 35%, var(--border)); background: var(--background); }
+.melodica-messenger { box-shadow: none; }
+.melodica-contact { transition: background-color .18s ease; }
+.melodica-contact-list, .melodica-message-list { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+.melodica-preference-panel, .melodica-notification-box { box-shadow: none; }
+.melodica-theme-choice { box-shadow: none; }
+.melodica-right-rail > section {
+  background: var(--card);
+  border-radius: 16px;
+  border: 1px solid var(--border);
 }
-.melodica-post-card:hover::before {opacity:.65;}
-.melodica-composer {border-style:dashed;border-color:color-mix(in oklch,var(--primary) 29%,var(--border));}
-.melodica-messenger {border-radius:1.3rem;box-shadow:0 8px 25px color-mix(in oklch,var(--primary) 5%,transparent);}
-.melodica-contact[aria-pressed="true"] {box-shadow:inset 3px 0 0 var(--primary);}
-.melodica-notification-box {border-color:color-mix(in oklch,var(--primary) 22%,var(--border));}
-.melodica-preference-panel {background-image:radial-gradient(circle at 100% 0%,color-mix(in oklch,var(--primary) 7%,transparent),transparent 45%);}
-.melodica-theme-choice {min-height:3.25rem;}
-.melodica-mention-menu {box-shadow:0 16px 36px color-mix(in oklch,var(--primary) 12%,transparent);}
-.dark .melodica-shell {
-  background:radial-gradient(ellipse 780px 540px at 0 0,color-mix(in oklch,var(--primary) 7%,transparent),transparent 72%),var(--surface);
+.melodica-feed-tabs { background: transparent; padding: 0; border-radius: 0; height: 44px; gap: 20px; }
+.melodica-feed-tabs > button {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 0;
+  border-radius: 0;
+  height: 44px;
+  color: var(--muted-foreground);
+  font-weight: 550;
+  padding: 0 2px;
+  position: relative;
 }
-.dark .melodica-post-card {background-image:linear-gradient(135deg,color-mix(in oklch,var(--primary) 5%,transparent),transparent 48%);}
-.dark .melodica-topbar {background:color-mix(in oklch,var(--background) 92%,transparent);}
-@media (prefers-reduced-motion:reduce) { .melodica-nav-link:hover {transform:none;} }
+.melodica-feed-tabs > button[data-state="active"] { color: var(--foreground); }
+.melodica-feed-tabs > button[data-state="active"]::after {
+  content: ""; position: absolute; height: 2px; border-radius: 2px;
+  bottom: 0; left: 0; right: 0; background: var(--primary);
+}
+.melodica-rail-link { border-top: 1px solid var(--border); }
+.melodica-profile-cover {
+  background-color: #183346;
+  background-image: repeating-linear-gradient(105deg, transparent 0px, transparent 28px, rgba(255,255,255,.035) 29px, transparent 30px);
+}
+.melodica-auth-aside {
+  background-color: #172e3e;
+  background-image: radial-gradient(circle at 85% 75%, rgba(77,163,199,.12) 0, transparent 45%);
+}
+.melodica-record {
+  background: repeating-radial-gradient(circle at center, #213c50 0, #213c50 3px, #193042 4px, #193042 9px);
+}
+.melodica-auth-paper { border: 1px solid rgba(255,255,255,.13); background: rgba(255,255,255,.055); }
+.melodica-auth-panel { background: var(--background); }
+@media (max-width: 640px) {
+  .melodica-post-card { border-radius: 14px; }
+  .melodica-mobile-nav { box-shadow: 0 -2px 14px rgba(15,42,55,.045); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}

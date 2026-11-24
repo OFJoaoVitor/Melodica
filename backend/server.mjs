@@ -11,7 +11,7 @@ const HOST = '127.0.0.1';
 const PORT = Number(process.env.MELODICA_API_PORT || '8787');
 const SESSION_AGE_SECONDS = 60 * 60 * 24 * 14;
 const MB = 1024 * 1024;
-// Arquivos recebidos em formato binário: MIME + assinatura real, sem confiar na extensão.
+ 
 const mediaTypes = {
   'image/jpeg': {extension:'jpg', max:5*MB, signature:b=>b.length>=4 && b[0]===0xff && b[1]===0xd8 && b[2]===0xff},
   'image/png': {extension:'png', max:5*MB, signature:b=>b.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))},
@@ -96,7 +96,7 @@ const publicUser = u => u ? { id:u.id, email:u.email } : null;
 const all = table => db.prepare(`SELECT * FROM ${table}`).all();
 const projection = (record, fields) => {
   if(fields === '*' || !fields) return record;
-  // Supabase-style select expressions for nested results are built separately.
+   
   const names = fields.split(',').map(v=>v.trim()).filter(v=>/^[a-z_]+$/.test(v));
   if(!names.length) return record;
   return Object.fromEntries(names.map(k=>[k,record[k] ?? null]));
@@ -159,7 +159,7 @@ const validValue = (table, payload) => {
   }
   return out;
 };
-// Uma comunidade tem identidade própria. O servidor valida os campos, não apenas o formulário.
+ 
 const validateCommunity = (payload, creating=false) => {
   if (creating || 'name' in payload) {
     if (typeof payload.name !== 'string' || payload.name.trim().length < 3 || payload.name.trim().length > 60)
@@ -205,7 +205,7 @@ const matching = (row,filters) => filters.every(f=>{
 const server = http.createServer(async(req,res)=>{
   try {
     const origin = req.headers.origin;
-    // Browsers may access this server only from local development pages.
+     
     if(origin) {
       const allowed = /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
       if(!allowed) throw httpError('Origem não autorizada.',403);
@@ -219,7 +219,7 @@ const server = http.createServer(async(req,res)=>{
     const url = new URL(req.url || '/',`http://${HOST}:${PORT}`);
     if(req.method==='GET' && url.pathname==='/api/health') {respond(res,200,{ok:true,engine:'SQLite local'});return;}
     if(!url.pathname.startsWith('/api/')) throw httpError('Rota não encontrada.',404);
-    // Streaming de mídia com suporte a Range (seek em players nativos).
+     
     const mediaMatch = /^\/api\/uploads\/([0-9a-f-]{36}\.(?:jpg|png|webp|gif|mp4|webm|weba|mp3|wav|ogg|ogv))$/.exec(url.pathname);
     if ((req.method==='GET' || req.method==='HEAD') && mediaMatch) {
       const filename=mediaMatch[1];
@@ -288,7 +288,7 @@ const server = http.createServer(async(req,res)=>{
       const email=String(body.email || '').trim().toLowerCase();
       const password=String(body.password || '');
       const account=db.prepare('SELECT id,email,password_hash FROM users WHERE email=?').get(email);
-      // Avoid leaking if the account exists.
+       
       if(!account || !checkPassword(password, account.password_hash)) throw httpError('Email ou senha incorretos.',401);
       setSession(res,account.id);respond(res,200,{user:{id:account.id,email:account.email}});return;
     }
@@ -303,7 +303,7 @@ const server = http.createServer(async(req,res)=>{
       db.prepare('DELETE FROM sessions WHERE user_id=? AND token_hash NOT IN (SELECT token_hash FROM sessions WHERE user_id=? ORDER BY expires_at DESC LIMIT 1)').run(user.id,user.id);
       respond(res,200,{user});return;
     }
-    // Interesses são sempre vinculados ao usuário da sessão HttpOnly, nunca a um id enviado pelo cliente.
+     
     if(url.pathname==='/api/interests') {
       if(!user) throw httpError('Entre em sua conta para personalizar a Melodica.',401);
       if(req.method==='GET') {respond(res,200,{interests:readInterests(db,user.id)});return;}
@@ -325,7 +325,7 @@ const server = http.createServer(async(req,res)=>{
       const posts=personalizedFeed(db,user.id,sort,limit).map(post=>enrich('posts',post));
       respond(res,200,{posts});return;
     }
-    // Pesquisa somente dados públicos dentro da área autenticada.
+     
     if(req.method==='GET' && url.pathname==='/api/search') {
       if(!user) throw httpError('Entre em sua conta para pesquisar.',401);
       const term=String(url.searchParams.get('q')||'').trim().slice(0,100);
@@ -340,14 +340,14 @@ const server = http.createServer(async(req,res)=>{
     }
     if(url.pathname==='/api/following' && req.method==='GET') {
       if(!user) throw httpError('Entre em sua conta para ver quem você segue.',401);
-      // Não confiar em ids informados pela interface: a consulta usa a sessão.
+       
       const following=db.prepare(`SELECT pr.id,pr.username,pr.display_name,pr.avatar_url,
         pr.account_type,pr.primary_instrument,f.created_at AS followed_at
         FROM follows f JOIN profiles pr ON pr.id=f.following_id
         WHERE f.follower_id=? ORDER BY pr.display_name COLLATE NOCASE ASC,pr.username ASC`).all(user.id);
       respond(res,200,{following});return;
     }
-    // Caixa central: apenas as notificações do usuário autenticado.
+     
     if (url.pathname === '/api/notifications' && req.method === 'GET') {
       if (!user) throw httpError('Entre em sua conta para ver notificações.',401);
       const notifications=db.prepare(`SELECT n.id,n.kind,n.message_id,n.comment_id,n.post_id,n.created_at,n.read_at,
@@ -373,7 +373,7 @@ const server = http.createServer(async(req,res)=>{
     }
     if(url.pathname==='/api/conversations' && req.method==='GET') {
       if(!user) throw httpError('Entre em sua conta para ver mensagens.',401);
-      // Apenas conversas em que o usuário autenticado participa.
+       
       const conversations=db.prepare(`SELECT m.id,m.created_at,m.sender_id,m.recipient_id,m.content,m.post_id,
         pr.id AS other_id,pr.username,pr.display_name,pr.avatar_url,po.title AS post_title,
         (SELECT COUNT(*) FROM messages unread WHERE unread.sender_id=pr.id AND unread.recipient_id=? AND unread.read_at IS NULL) AS unread_count
@@ -389,7 +389,7 @@ const server = http.createServer(async(req,res)=>{
         const other=String(url.searchParams.get('with')||'');
         if(!/^[0-9a-f-]{36}$/.test(other)) throw httpError('Destinatário inválido.');
         if(!db.prepare('SELECT id FROM profiles WHERE id=?').get(other)) throw httpError('Usuário não encontrado.',404);
-        // Abrir uma conversa confirma a leitura de suas mensagens e avisos de DM.
+         
         db.prepare('UPDATE messages SET read_at=CURRENT_TIMESTAMP WHERE recipient_id=? AND sender_id=? AND read_at IS NULL').run(user.id,other);
         db.prepare(`UPDATE notifications SET read_at=CURRENT_TIMESTAMP WHERE recipient_id=? AND kind='MESSAGE'
           AND actor_id=? AND read_at IS NULL`).run(user.id,other);
@@ -462,7 +462,7 @@ const server = http.createServer(async(req,res)=>{
         if(body.parent_comment_id && !db.prepare('SELECT id FROM comments WHERE id=? AND post_id=?').get(body.parent_comment_id,body.post_id)) throw httpError('Comentário pai inválido.');
         const usernames=[...body.content.matchAll(/(^|[^a-zA-Z0-9_@])@([a-z0-9_]{3,24})(?![a-zA-Z0-9_])/gi)]
           .map(match=>match[2].toLowerCase());
-        // Menções reais exigem que o autor siga a pessoa, inclusive se o texto for digitado manualmente.
+         
         for(const username of new Set(usernames)) {
           const mentioned=db.prepare('SELECT id,username FROM profiles WHERE username=?').get(username);
           if(!mentioned) continue;
@@ -491,7 +491,7 @@ const server = http.createServer(async(req,res)=>{
       if(table==='community_members' && !db.prepare('SELECT 1 FROM communities WHERE id=?').get(body.community_id)) throw httpError('Comunidade inválida.');
       body.id=randomUUID();
       if(table==='communities') {
-        // Criador entra automaticamente como responsável pela comunidade.
+         
         db.exec('BEGIN');
         try {
           sqlInsert(table,{...body,member_count:1});
@@ -531,7 +531,7 @@ const server = http.createServer(async(req,res)=>{
         for(const field of ['author_id','creator_id','id','user_id','follower_id','following_id','post_id','community_id','parent_comment_id']) delete patch[field];
       }
       if(patch && table==='communities') {
-        // Identificador público permanece estável após a criação para não quebrar links.
+         
         delete patch.slug;
         validateCommunity(patch);
       }

@@ -71,11 +71,11 @@ export async function fetchFeed(options: {
   return posts;
 }
 
-/**
- * Explorar: prioriza o engajamento recente sem inventar posts ou números.
- * Mostra primeiro publicações dos últimos 7 dias; se a rede ainda estiver
- * pouco movimentada, usa os últimos 30 dias ou as publicações existentes.
- */
+ 
+
+
+
+
 export async function fetchTrendingPosts(communityId?: string): Promise<FeedPost[]> {
   const posts = await fetchFeed({
     sort: "recent",
@@ -96,7 +96,7 @@ export async function fetchTrendingPosts(communityId?: string): Promise<FeedPost
   const score = (post: FeedPost) => {
     const votes = post.post_votes?.length ?? 0;
     const comments = post.comments?.[0]?.count ?? 0;
-    // Comentários e curtidas aumentam a relevância; a idade reduz seu peso.
+     
     return (1 + votes * 3 + comments * 4) / (1 + ageInDays(post) / 2);
   };
   return [...candidates]
@@ -128,7 +128,7 @@ export async function fetchCommunities(): Promise<Community[]> {
   return (data ?? []) as Community[];
 }
 
-/** Retorna o perfil completo de uma comunidade pelo endereço público. */
+ 
 export async function fetchCommunityBySlug(slug: string): Promise<Community | null> {
   const { data, error } = await supabase
     .from("communities")
@@ -214,7 +214,7 @@ export async function sendMessage(recipient_id:string, post_id:string|null,conte
   return apiPost<{message:Message}>("/messages",{recipient_id,post_id,content});
 }
 
-/** Feed “Para você”: ranking calculado pelo servidor com interesses e interações reais. */
+ 
 export async function fetchPersonalizedFeed(sort: "recent" | "popular", limit = 30): Promise<FeedPost[]> {
   const response = await apiGet<{ posts: FeedPost[] }>(`/feed/recommendations?sort=${sort}&limit=${limit}`);
   return response.posts;

@@ -119,12 +119,12 @@ function MessagesPage() {
     <AppShell>
       <div className="mx-auto max-w-5xl space-y-5">
         <header className="melodica-page-heading py-1">
-          <p className="melodica-kicker"><AudioLines className="h-3.5 w-3.5" /> CONEXÕES EM SINTONIA</p>
-          <h1 className="mt-2 font-display text-2xl font-bold tracking-tight text-ink sm:text-3xl">Mensagens diretas<span className="text-primary">.</span></h1>
-          <p className="mt-1.5 text-sm text-muted-foreground">Encontre seus contatos e mantenha a conversa fluindo.</p>
+          <p className="melodica-kicker"><AudioLines className="h-3.5 w-3.5" /> SUAS CONVERSAS</p>
+          <h1 className="mt-2 font-display text-2xl font-bold tracking-tight text-ink sm:text-3xl">Mensagens</h1>
+          <p className="mt-1.5 text-sm text-muted-foreground">Converse com outros músicos, sem sair da Melodica.</p>
         </header>
 
-        <section aria-label="Caixa de mensagens" className="melodica-messenger grid overflow-hidden rounded-3xl border bg-card shadow-card md:grid-cols-[minmax(245px,320px)_minmax(0,1fr)]">
+        <section aria-label="Caixa de mensagens" className="melodica-messenger grid overflow-hidden rounded-[18px] border bg-card md:grid-cols-[minmax(245px,320px)_minmax(0,1fr)]">
           <aside className={`min-w-0 border-border md:border-r ${selected ? "hidden md:block" : "block"}`}>
             <div className="border-b p-4 sm:p-5">
               <div className="flex items-center justify-between gap-2">
@@ -166,7 +166,7 @@ function MessagesPage() {
 
           <div className={`flex min-w-0 flex-col ${selected ? "flex" : "hidden md:flex"}`}>
             {!selected ? <div className="flex min-h-[520px] flex-1 flex-col items-center justify-center gap-4 px-8 text-center">
-              <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-primary-soft text-primary"><AudioLines className="h-10 w-10" /></div>
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary-soft text-primary"><AudioLines className="h-10 w-10" /></div>
               <h2 className="font-display text-xl font-bold text-ink">Uma conversa pode virar um som incrível.</h2>
               <p className="max-w-sm text-sm leading-6 text-muted-foreground">Escolha uma conversa ou abra a lista de músicos que você segue para enviar uma DM.</p>
               <Button onClick={() => setPane("following")} variant="outline">Encontrar meus contatos <UsersRound className="h-4 w-4" /></Button>

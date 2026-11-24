@@ -6,20 +6,20 @@ const KEY = "melodica-appearance";
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  // Uma preferência local do navegador: disponível antes mesmo do login.
+   
   const [theme, setTheme] = useState<Theme>("light");
   const [ready, setReady] = useState(false);
   useEffect(() => {
     try {
       if (window.localStorage.getItem(KEY) === "dark") setTheme("dark");
-    } catch { /* Em navegadores com armazenamento bloqueado, usa o tema claro. */ }
+    } catch {   }
     setReady(true);
   }, []);
   useEffect(() => {
     if (!ready) return;
     document.documentElement.classList.toggle("dark", theme === "dark");
     document.documentElement.style.colorScheme = theme;
-    try { window.localStorage.setItem(KEY, theme); } catch { /* sem persistência */ }
+    try { window.localStorage.setItem(KEY, theme); } catch {   }
   }, [theme, ready]);
   return <ThemeContext.Provider value={{ theme, setTheme }}>{children}</ThemeContext.Provider>;
 }

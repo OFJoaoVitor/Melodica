@@ -1,7 +1,10 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Home, Compass, Bookmark, Settings, LogOut, PenLine, UserRound, MessageSquare, AudioLines } from "lucide-react";
+import {
+  Home, Compass, Bookmark, Settings, LogOut, PenLine, UserRound,
+  MessageSquare, Headphones, ArrowUpRight,
+} from "lucide-react";
 import { fetchNotifications } from "@/lib/notifications";
 import { NotificationsPopover } from "./notifications-popover";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,7 +24,7 @@ const navItems = [
   { to: "/settings", label: "Configurações", icon: Settings },
 ] as const;
 
-const mobileItems = navItems.filter((item) => ["/feed","/explore","/messages","/profile"].includes(item.to));
+const mobileItems = navItems.filter((item) => ["/feed", "/explore", "/messages", "/profile"].includes(item.to));
 
 export function AppShell({
   children,
@@ -56,114 +59,119 @@ export function AppShell({
   }
 
   return (
-    <div className="melodica-shell min-h-screen bg-surface">
-      <header className="melodica-topbar sticky top-0 z-40 border-b bg-background/90 backdrop-blur-xl">
-        <div className="mx-auto flex h-14 max-w-7xl items-center gap-3 px-4 sm:px-6">
-          <Link to="/feed" aria-label="Feed da Melodica" className="shrink-0">
-            <span className="hidden sm:inline-flex">
-              <MelodicaLogo />
-            </span>
-            <span className="sm:hidden">
-              <MelodicaMark />
-            </span>
-          </Link>
-          <div className="hidden items-center gap-2 border-l border-border pl-4 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground xl:flex"><AudioLines className="h-4 w-4 text-primary" /> Sua cena, seu som</div>
-          <SearchBox />
-          {onCreatePost ? (
-            <Button size="sm" onClick={onCreatePost} className="hidden sm:inline-flex">
-              <PenLine className="h-4 w-4" />
-              Publicar
-            </Button>
-          ) : null}
-          <NotificationsPopover inbox={inbox} loading={notificationsLoading} error={notificationsError} />
-          <Link to="/profile" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border bg-primary-soft transition hover:ring-2 hover:ring-primary/30" title="Meu perfil" aria-label="Abrir meu perfil">
-            <Avatar className="h-8 w-8">
-              {profile?.avatar_url && <AvatarImage src={profile.avatar_url} alt="" className="object-cover" />}
-              <AvatarFallback className="bg-primary-soft text-xs font-semibold text-primary">{profile ? initials(profile.display_name || profile.username) : <UserRound className="h-4 w-4" />}</AvatarFallback>
-            </Avatar>
-          </Link>
-          <Button size="icon" variant="ghost" onClick={signOut} aria-label="Sair da conta">
-            <LogOut className="h-4 w-4" />
-          </Button>
-        </div>
-      </header>
+    <div className="melodica-shell min-h-screen lg:flex">
+      <aside className="melodica-sidebar sticky top-0 hidden h-screen w-[242px] shrink-0 flex-col border-r bg-card px-4 pb-5 pt-7 lg:flex xl:w-[262px] xl:px-5">
+        <Link to="/feed" aria-label="Melodica — início" className="mb-11 inline-flex w-fit items-center px-2">
+          <MelodicaLogo />
+        </Link>
 
-      <div className="mx-auto flex max-w-7xl gap-6 px-4 pt-6 pb-24 sm:px-6 lg:pb-10">
-        <aside className="sticky top-20 hidden h-fit w-56 shrink-0 lg:block">
-          <div className="mb-4 px-3">
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Seu espaço</p>
-          </div>
-          <nav className="space-y-1">
-            {navItems.map(({ to, label, icon: Icon }) => (
-              <Link
-                key={to}
-                to={to}
-                className="melodica-nav-link flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-                activeProps={{ className: "melodica-nav-active bg-primary-soft text-accent-foreground" }}
-              >
-                <Icon className="h-4 w-4" aria-hidden />
-                <span className="flex-1">{label}</span>
-                {to === "/messages" && !!inbox?.unread_messages && <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-semibold text-primary-foreground" aria-label={`${inbox.unread_messages} mensagens não lidas`}>{inbox.unread_messages > 99 ? "99+" : inbox.unread_messages}</span>}
-              </Link>
-            ))}
-          </nav>
-          {profile ? (
-            <Link to="/profile" className="mt-4 flex items-center gap-3 rounded-2xl border bg-card p-3 transition hover:border-primary/40 hover:bg-primary-soft/40">
-              <Avatar className="h-9 w-9">
-                {profile.avatar_url && <AvatarImage src={profile.avatar_url} alt="" className="object-cover" />}
-                <AvatarFallback className="bg-primary-soft text-xs text-accent-foreground">
-                  {initials(profile.display_name || profile.username)}
-                </AvatarFallback>
-              </Avatar>
-              <div className="min-w-0">
-                <p className="truncate text-sm font-medium text-ink">{profile.display_name}</p>
-                <p className="truncate text-xs text-muted-foreground">@{profile.username}</p>
-              </div>
+        <div className="mb-3 px-3 text-[11px] font-semibold uppercase tracking-[0.10em] text-muted-foreground">Menu</div>
+        <nav className="space-y-1" aria-label="Navegação principal">
+          {navItems.map(({ to, label, icon: Icon }) => (
+            <Link
+              key={to}
+              to={to}
+              className="melodica-nav-link flex items-center gap-3 rounded-xl px-3 py-3 text-[14px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              activeProps={{ className: "melodica-nav-active bg-primary-soft font-semibold text-primary" }}
+            >
+              <Icon className="h-[19px] w-[19px] shrink-0" strokeWidth={1.8} aria-hidden />
+              <span className="flex-1">{label}</span>
+              {to === "/messages" && !!inbox?.unread_messages && (
+                <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-semibold text-primary-foreground" aria-label={`${inbox.unread_messages} mensagens não lidas`}>
+                  {inbox.unread_messages > 99 ? "99+" : inbox.unread_messages}
+                </span>
+              )}
             </Link>
-          ) : null}
-        </aside>
+          ))}
+        </nav>
 
-        <main className="min-w-0 flex-1">{children}</main>
+        <div className="mt-8 px-2">
+          {onCreatePost ? (
+            <Button type="button" onClick={onCreatePost} className="melodica-create-button h-11 w-full justify-center rounded-xl text-sm font-semibold">
+              <PenLine className="h-4 w-4" /> Nova publicação
+            </Button>
+          ) : (
+            <Link to="/feed" className="flex items-center justify-between rounded-xl border px-3 py-3 text-sm font-medium text-muted-foreground transition hover:border-primary/30 hover:text-primary">
+              Ir para o feed <ArrowUpRight className="h-4 w-4" />
+            </Link>
+          )}
+        </div>
 
-        {aside ? (
-          <aside className="sticky top-20 hidden h-fit w-72 shrink-0 space-y-4 xl:block">{aside}</aside>
-        ) : null}
+        <div className="mt-auto px-1">
+          <div className="mb-3 flex items-center gap-2 rounded-xl bg-surface px-3 py-3 text-xs text-muted-foreground">
+            <Headphones className="h-4 w-4 shrink-0 text-primary" />
+            Um lugar para quem vive música.
+          </div>
+          {profile && (
+            <Link to="/profile" className="flex items-center gap-3 rounded-xl px-2 py-2 transition hover:bg-muted">
+              <Avatar className="h-10 w-10 shrink-0">
+                {profile.avatar_url && <AvatarImage src={profile.avatar_url} alt="" className="object-cover" />}
+                <AvatarFallback className="bg-primary-soft text-xs font-semibold text-primary">{initials(profile.display_name || profile.username)}</AvatarFallback>
+              </Avatar>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-[13px] font-semibold text-foreground">{profile.display_name}</span>
+                <span className="block truncate text-xs text-muted-foreground">@{profile.username}</span>
+              </span>
+            </Link>
+          )}
+          <button type="button" onClick={signOut} className="mt-2 flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-xs font-medium text-muted-foreground transition hover:bg-muted hover:text-foreground">
+            <LogOut className="h-4 w-4" /> Sair da conta
+          </button>
+        </div>
+      </aside>
+
+      <div className="min-w-0 flex-1">
+        <header className="melodica-topbar sticky top-0 z-40 border-b bg-background/95 backdrop-blur-lg">
+          <div className="mx-auto flex h-[70px] max-w-[1230px] items-center gap-3 px-4 sm:px-6 xl:px-10">
+            <Link to="/feed" aria-label="Melodica — início" className="mr-1 shrink-0 lg:hidden">
+              <span className="sm:hidden"><MelodicaMark className="!h-9 !w-9" /></span>
+              <span className="hidden sm:inline-flex"><MelodicaLogo /></span>
+            </Link>
+            <div className="hidden shrink-0 text-sm font-medium text-foreground/80 xl:block">Descubra. Compartilhe. Conecte.</div>
+            <SearchBox />
+            <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+              {onCreatePost && (
+                <Button type="button" onClick={onCreatePost} size="sm" className="hidden h-9 rounded-lg px-4 font-semibold sm:inline-flex lg:hidden">
+                  <PenLine className="h-4 w-4" /> Publicar
+                </Button>
+              )}
+              <NotificationsPopover inbox={inbox} loading={notificationsLoading} error={notificationsError} />
+              <Link to="/profile" className="rounded-full p-0.5 transition hover:ring-2 hover:ring-primary/20" title="Meu perfil" aria-label="Abrir meu perfil">
+                <Avatar className="h-9 w-9">
+                  {profile?.avatar_url && <AvatarImage src={profile.avatar_url} alt="" className="object-cover" />}
+                  <AvatarFallback className="bg-primary-soft text-xs font-semibold text-primary">{profile ? initials(profile.display_name || profile.username) : <UserRound className="h-4 w-4" />}</AvatarFallback>
+                </Avatar>
+              </Link>
+            </div>
+          </div>
+        </header>
+
+        <div className="mx-auto flex max-w-[1230px] items-start gap-7 px-4 pb-24 pt-7 sm:px-6 lg:pb-12 xl:gap-9 xl:px-10">
+          <main className="min-w-0 flex-1">{children}</main>
+          {aside && <aside className="melodica-right-rail sticky top-[98px] hidden w-[272px] shrink-0 space-y-4 xl:block">{aside}</aside>}
+        </div>
       </div>
 
-      <nav className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 backdrop-blur lg:hidden">
-        <ul className="mx-auto flex max-w-lg items-center justify-around px-2 py-2">
+      <nav className="melodica-mobile-nav fixed inset-x-0 bottom-0 z-40 border-t bg-card/95 px-2 pb-[env(safe-area-inset-bottom)] backdrop-blur-lg lg:hidden" aria-label="Navegação mobile">
+        <ul className="mx-auto flex h-[64px] max-w-[550px] items-center justify-around">
           {mobileItems.map(({ to, label, icon: Icon }) => (
             <li key={to}>
-              <Link
-                to={to}
-                className="flex flex-col items-center gap-1 rounded-xl px-3 py-1.5 text-[11px] text-muted-foreground"
-                activeProps={{ className: "text-primary" }}
-              >
-                <span className="relative"><Icon className="h-5 w-5" aria-hidden />{to === "/messages" && !!inbox?.unread_messages && <span className="absolute -right-2 -top-1 h-2.5 w-2.5 rounded-full bg-primary ring-2 ring-background" aria-label="Novas mensagens" />}</span>
+              <Link to={to} className="flex min-w-[54px] flex-col items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-medium text-muted-foreground" activeProps={{ className: "text-primary" }}>
+                <span className="relative"><Icon className="h-[21px] w-[21px]" strokeWidth={1.9} aria-hidden />{to === "/messages" && !!inbox?.unread_messages && <span className="absolute -right-1.5 -top-1 h-2.5 w-2.5 rounded-full bg-primary ring-2 ring-card" aria-label="Novas mensagens" />}</span>
                 {label}
               </Link>
             </li>
           ))}
-          {onCreatePost ? (
+          {onCreatePost && (
             <li>
-              <button
-                type="button"
-                onClick={onCreatePost}
-                className="flex flex-col items-center gap-1 rounded-md px-3 py-1 text-[11px] text-primary"
-              >
-                <PenLine className="h-5 w-5" aria-hidden />
-                Publicar
+              <button type="button" onClick={onCreatePost} className="flex min-w-[54px] flex-col items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-semibold text-primary">
+                <PenLine className="h-[21px] w-[21px]" strokeWidth={1.9} aria-hidden /> Publicar
               </button>
             </li>
-          ) : null}
+          )}
         </ul>
       </nav>
-
-      {profile ? (
-        <span className="sr-only">
-          Conectado como {profile.display_name}, {accountTypeLabel(profile.account_type)}
-        </span>
-      ) : null}
+      {profile && <span className="sr-only">Conectado como {profile.display_name}, {accountTypeLabel(profile.account_type)}</span>}
     </div>
   );
 }

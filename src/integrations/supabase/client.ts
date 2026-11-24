@@ -1,8 +1,8 @@
-/**
- * Adaptador para a API local SQLite do Melodica.
- * Mantém a interface utilizada pelas telas existentes (auth e consultas encadeadas).
- * Não utiliza Supabase nem Lovable Cloud.
- */
+ 
+
+
+
+
 type LocalUser = { id: string; email: string };
 type LocalSession = { user: LocalUser; access_token: string };
 type AuthEvent = "SIGNED_IN" | "SIGNED_OUT" | "USER_UPDATED";
@@ -16,7 +16,7 @@ function notify(event: AuthEvent, session: LocalSession | null) {
 }
 function apiBase() {
   if (typeof window === "undefined") return "http://127.0.0.1:8787/api";
-  // Usa o mesmo hostname do site: localhost ou 127.0.0.1 para o cookie funcionar.
+   
   return `http://${window.location.hostname}:8787/api`;
 }
 async function request(path: string, init: RequestInit = {}) {
@@ -29,7 +29,7 @@ async function request(path: string, init: RequestInit = {}) {
   if (!response.ok) throw new Error(value.message || `Erro ${response.status}`);
   return value;
 }
-/** API autenticada do backend SQLite local (mantém cookies HttpOnly). */
+ 
 export async function apiGet<T>(path: string): Promise<T> {
   return request(path) as Promise<T>;
 }
@@ -39,7 +39,7 @@ export async function apiPost<T>(path: string, body: unknown): Promise<T> {
 export async function apiPut<T>(path: string, body: unknown): Promise<T> {
   return request(path, { method: "PUT", body: JSON.stringify(body) }) as Promise<T>;
 }
-/** Upload binário sem base64, para imagens, vídeos e áudios. */
+ 
 export async function uploadMedia(file: File): Promise<string> {
   const response = await fetch(`${apiBase()}/uploads`, {
     method: "POST", credentials: "include",
@@ -146,10 +146,10 @@ export const supabase = {
       } catch(error){return {data:null,error:wrapError(error)};}
     },
     async resetPasswordForEmail() {
-      return {error:new Error('A recuperação de senha por email não está disponível no modo local. Consulte o README.')};
+      return {error:new Error('A recuperação automática de senha ainda não está disponível.')};
     },
     async signInWithOAuth() {
-      return {error:new Error('Login com Google indisponível no modo local. Use email e senha.')};
+      return {error:new Error('Esta forma de acesso não está disponível no momento.')};
     },
   },
 };

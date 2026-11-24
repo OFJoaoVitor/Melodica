@@ -1,4 +1,4 @@
-/** Integração de notificações/menções, sem tocar no banco de produção. */
+ 
 import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, copyFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';

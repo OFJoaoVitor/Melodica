@@ -57,7 +57,7 @@ export function ImageFileField({
         disabled={disabled}
         onChange={(event) => {
           const chosen = event.target.files?.[0];
-          // Permite selecionar novamente o mesmo arquivo após uma tentativa inválida.
+           
           event.target.value = "";
           if (!chosen) return;
           const error = validateImageFile(chosen);

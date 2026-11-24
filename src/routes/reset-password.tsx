@@ -11,9 +11,9 @@ export const Route = createFileRoute("/reset-password")({
   head: () => ({
     meta: [
       { title: "Nova senha — Melodica" },
-      { name: "description", content: "Altere a senha se estiver conectado na versão local." },
+      { name: "description", content: "Crie uma nova senha para sua conta Melodica." },
       { property: "og:title", content: "Nova senha — Melodica" },
-      { property: "og:description", content: "Altere a senha se estiver conectado na versão local." },
+      { property: "og:description", content: "Crie uma nova senha para sua conta Melodica." },
     ],
   }),
   component: ResetPasswordPage,

@@ -25,7 +25,7 @@ export function PostMediaField({type,file,onChange,disabled}:{
           if(signatureError){toast.error(signatureError);return;}onChange(chosen);
         }catch{toast.error("Não foi possível ler o arquivo selecionado.");}
       }}/>
-    <p className="text-xs text-muted-foreground">Escolha do computador: {rule.description}. O servidor também verifica o formato real.</p>
+    <p className="text-xs text-muted-foreground">Formatos aceitos: {rule.description}.</p>
     {preview && type==="IMAGE" && <img src={preview} className="max-h-48 w-full rounded-md border object-contain" alt="Prévia da imagem"/>}
     {preview && type==="VIDEO" && <video key={preview} controls playsInline preload="metadata" className="max-h-64 w-full rounded-md border" src={preview}>Prévia de vídeo indisponível.</video>}
     {preview && type==="AUDIO" && <audio key={preview} controls className="w-full" src={preview}>Prévia de áudio indisponível.</audio>}

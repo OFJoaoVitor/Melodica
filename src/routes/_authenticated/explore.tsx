@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AudioLines, ChevronLeft, ChevronRight, Compass, Flame, Plus, UsersRound } from "lucide-react";
+import { ChevronLeft, ChevronRight, Compass, Flame, Plus, UsersRound } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/hooks/use-session";
@@ -76,19 +76,19 @@ function ExplorePage() {
 
   return (
     <AppShell>
-      <div className="mx-auto w-full max-w-3xl space-y-7">
-        <header className="melodica-page-heading flex flex-wrap items-end justify-between gap-4 py-1">
-          <div><p className="melodica-kicker"><AudioLines className="h-3.5 w-3.5" /> DESCUBRA NOVOS SONS</p>
-          <h1 className="mt-2 font-display text-2xl font-bold tracking-tight text-ink sm:text-3xl">Explore a cena<span className="text-primary">.</span></h1>
-          <p className="mt-1.5 max-w-md text-sm leading-6 text-muted-foreground">Comunidades e publicações que estão fazendo barulho.</p></div>
-          <Button type="button" onClick={() => setCreateCommunityOpen(true)} className="rounded-xl"><Plus className="h-4 w-4" /> Criar comunidade</Button>
+      <div className="mx-auto w-full max-w-[840px] space-y-8">
+        <header className="melodica-page-heading flex flex-wrap items-end justify-between gap-4 pt-1">
+          <div><p className="melodica-kicker"><Compass className="h-3.5 w-3.5" /> ENCONTRE SUA CENA</p>
+          <h1 className="mt-2 font-display text-2xl font-bold tracking-tight text-ink sm:text-3xl">Explorar</h1>
+          <p className="mt-1.5 max-w-md text-sm leading-6 text-muted-foreground">Conheça gente nova, encontre comunidades e acompanhe o que está em alta.</p></div>
+          <Button type="button" onClick={() => setCreateCommunityOpen(true)} className="h-10 rounded-lg"><Plus className="h-4 w-4" /> Criar comunidade</Button>
         </header>
 
         <section aria-labelledby="explore-communities" className="min-w-0 space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <h2 id="explore-communities" className="text-lg font-semibold text-ink">Comunidades</h2>
-              <p className="text-xs text-muted-foreground">Deslize para o lado e conheça novos espaços musicais.</p>
+              <p className="mt-1 text-xs text-muted-foreground">Um cantinho para cada estilo e interesse.</p>
             </div>
             <div className="flex gap-1">
               <Button type="button" size="icon" variant="outline" className="h-8 w-8" onClick={() => scrollCommunities(-1)} aria-label="Comunidades anteriores">
@@ -108,30 +108,30 @@ function ExplorePage() {
           ) : (
             <div
               ref={communityStrip}
-              className="flex min-w-0 snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain pb-3"
+              className="flex min-w-0 snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain pb-2"
               role="region"
               aria-label="Comunidades, deslize horizontalmente"
               tabIndex={0}
             >
               <article className={cn(
-                "melodica-panel flex w-44 shrink-0 snap-start flex-col rounded-2xl border bg-card p-3 transition-colors",
+                "melodica-panel flex w-[190px] shrink-0 snap-start flex-col rounded-[16px] border bg-card p-4 transition-colors",
                 !selectedCommunityId && "border-primary bg-primary-soft/30",
               )}>
                 <button type="button" onClick={() => setSelectedCommunityId(null)} aria-pressed={!selectedCommunityId}
-                  className="flex flex-1 flex-col items-center justify-center gap-2 rounded-lg text-center focus-visible:outline-2 focus-visible:outline-primary">
-                  <span className="flex h-14 w-14 items-center justify-center rounded-full bg-primary-soft text-primary">
+                  className="flex flex-1 flex-col items-start justify-center gap-2 rounded-lg text-left focus-visible:outline-2 focus-visible:outline-primary">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-soft text-primary">
                     <Compass className="h-6 w-6" aria-hidden />
                   </span>
                   <span className="text-sm font-semibold text-ink">Todas</span>
-                  <span className="text-xs text-muted-foreground">Posts de toda a Melodica</span>
+                  <span className="text-xs leading-5 text-muted-foreground">Veja todas as conversas</span>
                 </button>
-                <span className="mt-3 rounded-md bg-primary-soft px-2 py-1.5 text-center text-xs font-medium text-primary">
+                <span className="mt-4 rounded-lg bg-primary-soft px-2 py-2 text-center text-xs font-semibold text-primary">
                   Ver todos os posts
                 </span>
               </article>
 
               {communitiesLoading ? (
-                [0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-48 w-44 shrink-0 snap-start rounded-xl" />)
+                [0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-48 w-[190px] shrink-0 snap-start rounded-xl" />)
               ) : (
                 (communities ?? []).map((community) => {
                   const isMember = (community.community_members ?? []).some((member) => member.user_id === userId);
@@ -140,19 +140,19 @@ function ExplorePage() {
                   const isCreator = community.creator_id === userId;
                   return (
                     <article key={community.id} className={cn(
-                      "melodica-panel flex w-44 shrink-0 snap-start flex-col rounded-2xl border bg-card p-3 transition-colors hover:border-primary/40",
+                      "melodica-panel flex w-[190px] shrink-0 snap-start flex-col rounded-[16px] border bg-card p-4 transition-colors hover:border-primary/40",
                       selected && "border-primary bg-primary-soft/30",
                     )}>
                       <Link
                         to="/c/$slug"
                         params={{ slug: community.slug }}
                         title={`Abrir o perfil de ${community.name}`}
-                        className="flex min-w-0 flex-1 flex-col items-center gap-2 rounded-lg text-center hover:text-primary focus-visible:outline-2 focus-visible:outline-primary"
+                        className="flex min-w-0 flex-1 flex-col items-start gap-2 rounded-lg text-left hover:text-primary focus-visible:outline-2 focus-visible:outline-primary"
                       >
-                        <Avatar className={cn("h-14 w-14 border-2 border-background shadow-sm", selected && "ring-2 ring-primary")}>
+                        <Avatar className={cn("h-12 w-12", selected && "ring-2 ring-primary")}>
                           {community.avatar_url && <AvatarImage src={community.avatar_url} alt="" className="object-cover" />}
                           <AvatarFallback
-                            style={{ backgroundColor: community.accent ?? "#2563eb" }}
+                            style={{ backgroundColor: community.accent ?? "#147fae" }}
                             className="text-base font-semibold text-white"
                           >
                             {initials(community.name)}
@@ -165,14 +165,14 @@ function ExplorePage() {
                         </span>
                       </Link>
                       <button type="button" onClick={() => setSelectedCommunityId(community.id)}
-                        aria-pressed={selected} className="mt-2 text-xs font-medium text-primary hover:underline">
+                        aria-pressed={selected} className="mt-4 text-left text-xs font-semibold text-primary hover:underline">
                         {selected ? "Mostrando posts" : "Ver posts"}
                       </button>
                       <Button
                         type="button"
                         size="sm"
                         variant={isMember ? "outline" : "default"}
-                        className="mt-3 w-full"
+                        className="mt-3 w-full rounded-lg"
                         disabled={!userId || toggleMembership.isPending || isCreator}
                         onClick={() => toggleMembership.mutate({ communityId: community.id, isMember })}
                         aria-label={isCreator ? `Você criou ${community.name}` : `${isMember ? "Sair de" : "Participar de"} ${community.name}`}
@@ -195,10 +195,10 @@ function ExplorePage() {
             <div>
               <h2 id="explore-trending" className="flex items-center gap-2 text-lg font-semibold text-ink">
                 <Flame className="h-5 w-5 text-primary" aria-hidden />
-                {selectedCommunity ? `Em alta em ${selectedCommunity.name}` : "Posts virais do momento"}
+                {selectedCommunity ? `Em alta em ${selectedCommunity.name}` : "Conversas em destaque"}
               </h2>
               <p className="mt-1 text-xs text-muted-foreground">
-                Publicações com mais engajamento recente, atualizadas conforme as interações.
+                As publicações que estão movimentando a comunidade.
               </p>
             </div>
             {selectedCommunity && (

@@ -1,4 +1,4 @@
-# Logs
+
 logs
 *.log
 npm-debug.log*
@@ -16,11 +16,11 @@ dist-ssr
 .nitro
 *.local
 
-# Wrangler / Cloudflare
+
 .wrangler/
 .dev.vars
 
-# Editor directories and files
+
 .vscode/*
 !.vscode/extensions.json
 .idea
@@ -31,15 +31,15 @@ dist-ssr
 *.sln
 *.sw?
 
-# Banco local: nunca publicar dados pessoais ou senhas
+
 backend/data/
 
-# Variáveis de ambiente
+
 .env
 .env.*
 !.env.example
 
-# Bancos de dados locais
+
 *.sqlite
 *.sqlite-shm
 *.sqlite-wal

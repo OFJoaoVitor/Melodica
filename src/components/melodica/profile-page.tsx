@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
   ArrowLeft, CalendarDays, Compass, Headphones, Heart, Link2,
-  MapPin, MessageCircle, Mic2, Music2, PenLine, Settings2, Share2, Sparkles,
+  MapPin, MessageCircle, Mic2, Music2, PenLine, Settings2, Share2,
   UserCheck, UserPlus, Users, Waves,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -172,6 +172,7 @@ export function ProfilePage({ username }: { username?: string }) {
       queryClient.invalidateQueries({ queryKey: ["profile-followers", profile?.id] });
       queryClient.invalidateQueries({ queryKey: ["profile-following", userId] });
       queryClient.invalidateQueries({ queryKey: ["following", userId] });
+      queryClient.invalidateQueries({ queryKey: ["messaging-following", userId] });
     },
     onError: () => toast.error("Não foi possível atualizar o acompanhamento."),
   });
@@ -185,7 +186,7 @@ export function ProfilePage({ username }: { username?: string }) {
 
   const aside = profile ? (
     <>
-      <section className="overflow-hidden rounded-xl border bg-card shadow-[var(--shadow-soft)]">
+      <section className="overflow-hidden rounded-[18px] border bg-card">
         <div className="flex items-center gap-2 border-b px-5 py-4">
           <Music2 className="h-4 w-4 text-primary" />
           <h2 className="text-sm font-semibold text-ink">Identidade musical</h2>
@@ -244,7 +245,7 @@ export function ProfilePage({ username }: { username?: string }) {
         ) : profileError ? (
           <section className="rounded-xl border bg-card p-10 text-center">
             <p className="font-semibold text-ink">Não foi possível carregar este perfil.</p>
-            <p className="mt-1 text-sm text-muted-foreground">Verifique se o backend local está ligado.</p>
+            <p className="mt-1 text-sm text-muted-foreground">Tente novamente em instantes.</p>
           </section>
         ) : !profile ? (
           <section className="rounded-xl border bg-card p-10 text-center">
@@ -259,31 +260,27 @@ export function ProfilePage({ username }: { username?: string }) {
               <Link to="/feed" className="inline-flex items-center gap-2 text-xs font-medium text-muted-foreground transition hover:text-primary">
                 <ArrowLeft className="h-4 w-4" /> Voltar ao início
               </Link>
-              <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
+              <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.1em] text-primary">
                 <Waves className="h-3.5 w-3.5" /> {isMine ? "Meu espaço musical" : "Perfil musical"}
               </span>
             </div>
 
-            <section className="overflow-hidden rounded-2xl border bg-card shadow-[var(--shadow-card)]">
+            <section className="overflow-hidden rounded-[18px] border bg-card">
               <div
-                className="relative h-40 overflow-hidden bg-[#0b1c48] sm:h-48"
+                className="melodica-profile-cover relative h-36 overflow-hidden sm:h-44"
                 style={safeImageUrl(profile.banner_url) ? { backgroundImage: `linear-gradient(90deg,rgba(10,23,61,.72),rgba(10,23,61,.26)),url(${JSON.stringify(safeImageUrl(profile.banner_url))})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
               >
                 {!safeImageUrl(profile.banner_url) && (
                   <>
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#0c1d4a] via-[#164cba] to-[#3676fb]" />
-                    <div className="absolute -right-20 -top-44 h-96 w-96 rounded-full border border-white/20" />
-                    <div className="absolute -right-7 -top-24 h-72 w-72 rounded-full border border-white/20" />
-                    <div className="absolute inset-0 opacity-40" style={{ backgroundImage: "radial-gradient(circle, #fff 0.8px, transparent 1px)", backgroundSize: "22px 22px", maskImage: "linear-gradient(to left, black, transparent 75%)" }} />
-                    <div className="absolute inset-x-0 bottom-0 flex h-24 items-center justify-center gap-1 opacity-35 sm:gap-1.5" aria-hidden>
-                      {waveform.map((h, i) => <span key={i} className="w-1.5 rounded-full bg-white sm:w-2" style={{ height: `${h}%` }} />)}
+                    <div className="absolute bottom-0 right-0 flex h-28 w-[60%] items-center justify-end gap-[5px] overflow-hidden pr-6 opacity-20" aria-hidden>
+                      {waveform.map((h, i) => <span key={i} className="w-1 shrink-0 rounded-full bg-white" style={{ height: `${h}%` }} />)}
                     </div>
                   </>
                 )}
-                <div className="absolute left-5 top-5 flex items-center gap-2 rounded-full border border-white/20 bg-black/20 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-white backdrop-blur sm:left-7">
-                  <Sparkles className="h-3.5 w-3.5" /> Aqui a música tem voz
+                <div className="absolute left-5 top-5 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/75 sm:left-7">
+                  Perfil · Melodica
                 </div>
-                <div className="absolute bottom-4 right-5 flex items-center gap-1.5 text-xs font-semibold text-white/90 sm:right-7">
+                <div className="absolute bottom-4 right-5 flex items-center gap-1.5 text-xs font-semibold text-white/80 sm:right-7">
                   <Waves className="h-4 w-4" /> melodica
                 </div>
               </div>
@@ -335,7 +332,7 @@ export function ProfilePage({ username }: { username?: string }) {
                   </div>
                 </div>
 
-                <div className="mt-6 grid grid-cols-3 divide-x rounded-xl bg-surface p-3 text-center sm:max-w-md">
+                <div className="mt-6 grid grid-cols-3 divide-x rounded-xl border bg-surface p-3 text-center sm:max-w-md">
                   <div><p className="font-display text-xl font-bold text-ink">{postCounts ?? "–"}</p><p className="mt-0.5 text-[11px] text-muted-foreground">Publicações</p></div>
                   <div><p className="font-display text-xl font-bold text-ink">{followRows?.length ?? "–"}</p><p className="mt-0.5 text-[11px] text-muted-foreground">Seguidores</p></div>
                   <div><p className="font-display text-xl font-bold text-ink">{followingRows?.length ?? "–"}</p><p className="mt-0.5 text-[11px] text-muted-foreground">Seguindo</p></div>
@@ -343,7 +340,7 @@ export function ProfilePage({ username }: { username?: string }) {
               </div>
             </section>
 
-            <section className="overflow-hidden rounded-xl border bg-card shadow-[var(--shadow-soft)]">
+            <section className="overflow-hidden rounded-[18px] border bg-card">
               <div className="flex gap-1 overflow-x-auto border-b px-3 pt-2 sm:px-5" role="tablist" aria-label="Conteúdo do perfil">
                 {([
                   { id: "posts" as const, label: "Publicações", icon: PenLine },

@@ -1,4 +1,4 @@
-/** Regras de interesses e ranking: sem serviço externo e apenas com dados do SQLite. */
+ 
 const CATALOG = {"genres": ["Gospel e Worship", "Rock", "Pop", "Jazz", "Blues", "Música Clássica", "MPB", "Samba", "Pagode", "Sertanejo", "Funk", "Rap e Hip-Hop", "Trap", "R&B e Soul", "Reggae", "Eletrônica", "Indie", "Metal", "Punk", "Forró", "K-pop", "Lo-fi", "Country", "Bossa Nova"], "instruments": ["Contrabaixo", "Guitarra", "Violão", "Piano", "Teclado", "Bateria", "Violino", "Violoncelo", "Saxofone", "Trompete", "Flauta", "Ukulele", "Percussão", "Voz/Canto", "Produção musical"], "artists": ["Michael Jackson", "Bruno Mars", "The Weeknd", "Beyoncé", "Taylor Swift", "Coldplay", "Queen", "The Beatles", "Linkin Park", "Metallica", "Nirvana", "Kirk Franklin", "Hillsong Worship", "Gabriela Rocha", "Fernandinho", "Aline Barros", "Djavan", "Tim Maia", "Legião Urbana", "Charlie Brown Jr.", "Marília Mendonça", "Jorge & Mateus", "Kendrick Lamar", "Travis Scott"], "topics": ["Teoria musical", "Composição", "Produção musical", "Gravação e mixagem", "Improvisação", "Harmonia", "Técnica instrumental", "Covers musicais", "Aulas e tutoriais", "Equipamentos musicais", "Pedais e amplificadores", "Shows e festivais", "História da música", "Análise de músicas", "Partituras e tablaturas", "Criação de bandas", "Colaborações entre músicos"]};
 const fold = text => String(text || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR').replace(/[^a-z0-9]+/g,' ').trim();
 const parse = value => {try {const v=JSON.parse(value || '[]');return Array.isArray(v)?v:[];}catch{return []}};
@@ -8,7 +8,7 @@ export const emptyInterests = () => ({genres:[],instruments_played:[],instrument
 export function readInterests(db,userId) {
   const row=db.prepare('SELECT * FROM user_music_interests WHERE user_id=?').get(userId);
   if (row) return Object.fromEntries([...fields.map(k=>[k,parse(row[k])]),['completed',!!row.completed],['updated_at',row.updated_at]]);
-  // Primeiro acesso: apresenta opções iniciais do perfil antigo, sem marcá-lo como concluído.
+   
   const profile=db.prepare('SELECT genres,primary_instrument FROM profiles WHERE id=?').get(userId);
   const savedGenres=parse(profile?.genres).map(v=> CATALOG.genres.find(g=>fold(g)===fold(v) || (fold(g)==='gospel e worship' && fold(v)==='gospel') || (fold(g)==='musica classica' && fold(v)==='classica') || (fold(g)==='rap e hip hop' && fold(v)==='hip hop'))).filter(Boolean);
   const instrument=CATALOG.instruments.find(i=>fold(i)===fold(profile?.primary_instrument) || (i==='Contrabaixo' && fold(profile?.primary_instrument)==='baixo') || (i==='Voz/Canto' && fold(profile?.primary_instrument)==='voz'));
@@ -57,7 +57,7 @@ function affinity(a,b){
     intersect(i,j)*1.6+intersect(a.artists||[],new Set((b.artists||[]).map(fold)))*2+
     intersect(a.topics||[],new Set((b.topics||[]).map(fold))));
 }
-// Sinônimos permitem que posts antigos, ainda sem etiquetas, sejam encontrados pelo texto.
+ 
 const aliases = {
   'gospel e worship':['gospel','worship','louvor','corinho'],
   'rap e hip hop':['rap','hip hop'],
@@ -104,13 +104,13 @@ function scorePost(post,interest,authorInterest,actions,sort,signals){
   }
   match=Math.min(match,60);
   match+=affinity(interest,authorInterest)*0.7;
-  // Interações anteriores influenciam novos conteúdos que compartilham as mesmas categorias.
+   
   let learned=0;
   for(const key of Object.keys(signals)) {
     for(const tag of metadata[key]) learned+=Math.min(4,signals[key].get(fold(tag)) || 0)*0.85;
   }
   match+=Math.min(8,learned);
-  // Pequeno bônus de interação direta: não deve dominar as recomendações inéditas.
+   
   match+=actions.voted?0.5:0;
   match+=actions.commented?0.6:0;
   match+=actions.shared?0.9:0;
@@ -122,14 +122,14 @@ function scorePost(post,interest,authorInterest,actions,sort,signals){
 export function personalizedFeed(db,userId,sort='recent',limit=30){
   const prefs=readInterests(db,userId);
   if(!prefs.completed)return [];
-  // Apenas postagens reais, universo limitado por data para custo previsível.
+   
   const posts=db.prepare(`SELECT p.*, c.name AS community_name,c.category AS community_category,
     (SELECT COUNT(*) FROM post_votes pv WHERE pv.post_id=p.id) AS votes_count
     FROM posts p LEFT JOIN communities c ON c.id=p.community_id ORDER BY p.created_at DESC LIMIT 500`).all();
   const authors=new Map();
   const interests=db.prepare('SELECT * FROM user_music_interests WHERE completed=1').all();
   for(const record of interests)authors.set(record.user_id,Object.fromEntries(fields.map(k=>[k,parse(record[k])])));
-  // Preferências antigas do perfil servem como contexto até seus autores concluírem o onboarding.
+   
   for(const post of posts) if(!authors.has(post.author_id))authors.set(post.author_id,readInterests(db,post.author_id));
   const voted=new Set(db.prepare('SELECT post_id FROM post_votes WHERE user_id=?').all(userId).map(r=>r.post_id));
   const commented=new Set(db.prepare('SELECT post_id FROM comments WHERE author_id=?').all(userId).map(r=>r.post_id));
@@ -138,7 +138,7 @@ export function personalizedFeed(db,userId,sort='recent',limit=30){
   const ranked=posts.map(p=>({post:p,score:scorePost(p,prefs,authors.get(p.author_id),{voted:voted.has(p.id),commented:commented.has(p.id),shared:shared.has(p.id)},sort,signals)}));
   const result=[],authorCount=new Map(),communityCount=new Map();
   while(ranked.length && result.length<limit){
-    // 1 a cada 6 publicações abre espaço para descoberta, ainda priorizando atualidade.
+     
     const explore=result.length%6===5;
     let best=0,bestScore=-Infinity;
     for(let i=0;i<ranked.length;i++){

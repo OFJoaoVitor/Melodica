@@ -87,7 +87,7 @@ CREATE INDEX IF NOT EXISTS idx_posts_created ON posts(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_members_user ON community_members(user_id);
 CREATE INDEX IF NOT EXISTS idx_follows_user ON follows(follower_id);
 `);
-// Migração segura para instalações antigas: mantém postagens, usuários e mídias.
+ 
 const postColumns = new Set(db.prepare('PRAGMA table_info(posts)').all().map(col=>col.name));
 for (const key of ['genres','instruments','artists','topics']) {
   if (!postColumns.has(key)) db.exec(`ALTER TABLE posts ADD COLUMN ${key} TEXT NOT NULL DEFAULT '[]'`);
@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS user_music_interests (
 );
 CREATE INDEX IF NOT EXISTS idx_interests_completed ON user_music_interests(completed);
 `);
-// Notificações persistentes e menções. Migração incremental, sem apagar dados existentes.
+ 
 const messageColumns = new Set(db.prepare('PRAGMA table_info(messages)').all().map(col=>col.name));
 if (!messageColumns.has('read_at')) db.exec('ALTER TABLE messages ADD COLUMN read_at TEXT');
 db.exec(`

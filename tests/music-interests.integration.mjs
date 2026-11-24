@@ -1,8 +1,8 @@
-/**
- * Executar com: npm run test:interests
- * Usa cópia temporária do backend; nunca apaga o banco de dados do usuário.
- * Requer Node 22+ (node:sqlite); não depende do frontend nem de npm install.
- */
+ 
+
+
+
+
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { cpSync, existsSync, mkdtempSync, mkdirSync, rmSync } from 'node:fs';
@@ -37,7 +37,7 @@ async function startBackend() {
     try {
       const response = await fetch(`${base}/health`);
       if (response.ok) return;
-    } catch { /* Porta ainda não está pronta. */ }
+    } catch {  }
     await delay(60);
   }
   throw new Error('Servidor não iniciou.');

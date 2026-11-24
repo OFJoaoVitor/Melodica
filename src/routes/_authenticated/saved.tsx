@@ -30,20 +30,20 @@ function SavedPage() {
 
   return (
     <AppShell>
-      <div className="mx-auto max-w-2xl space-y-4">
-        <div>
-          <h1 className="text-xl font-semibold text-ink">Salvos</h1>
+      <div className="mx-auto max-w-[724px] space-y-5">
+        <header className="melodica-page-heading pt-1">
+          <h1 className="text-[26px] font-bold text-ink sm:text-[30px]">Salvos</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Publicações que você guardou para ver depois.
           </p>
-        </div>
+        </header>
 
         {isLoading ? (
           [0, 1].map((i) => <Skeleton key={i} className="h-40 w-full rounded-lg" />)
         ) : posts && posts.length > 0 ? (
-          posts.map((post) => <PostCard key={post.id} post={post} userId={userId} />)
+          <div className="space-y-4">{posts.map((post) => <PostCard key={post.id} post={post} userId={userId} />)}</div>
         ) : (
-          <div className="rounded-lg border bg-card p-10 text-center">
+          <div className="rounded-[18px] border bg-card p-12 text-center">
             <p className="font-medium text-ink">Você ainda não salvou nada.</p>
             <p className="mt-1 text-sm text-muted-foreground">
               Toque em “Salvar” em qualquer publicação para encontrá-la aqui.

@@ -5,7 +5,7 @@ export const Route = createFileRoute("/forgot-password")({
   head: () => ({
     meta: [
       { title: "Recuperar senha — Melodica" },
-      { name: "description", content: "Recuperação de senha administrativa na versão local." },
+      { name: "description", content: "Saiba como recuperar o acesso à sua conta Melodica." },
       { property: "og:title", content: "Recuperar senha — Melodica" },
       { property: "og:description", content: "Recupere o acesso à sua conta Melodica." },
     ],
@@ -16,14 +16,13 @@ export const Route = createFileRoute("/forgot-password")({
 function ForgotPasswordPage() {
   return (
     <AuthShell
-      title="Recuperar senha (modo local)"
-      subtitle="O Melodica local não envia emails automaticamente."
+      title="Recuperar senha"
+      subtitle="Precisa de ajuda para acessar sua conta?"
       footer={<Link to="/login" className="font-medium text-primary hover:underline">Voltar para entrar</Link>}
     >
       <p className="text-sm leading-6 text-muted-foreground">
-        Se você esqueceu a senha, o administrador do computador pode executar
-        <code className="mx-1 rounded bg-muted px-1">npm run reset-password</code>
-        no terminal do VS Code, informar seu email e escolher uma senha nova.
+        A recuperação automática ainda não está disponível. Para redefinir sua senha,
+        solicite ajuda à equipe responsável pela Melodica.
       </p>
     </AuthShell>
   );

@@ -23,7 +23,7 @@ export async function uploadPostMedia(file:File,type:PostType) {
   return uploadMedia(file);
 }
 
-/** Verificação rápida de assinatura, além do MIME informado pelo navegador. */
+ 
 export async function verifyMediaSignature(file:File,type:PostType):Promise<string|null> {
   if(type==="TEXT") return "Nenhuma mídia foi selecionada.";
   const bytes=new Uint8Array(await file.slice(0,4096).arrayBuffer());

@@ -1,13 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { authErrorMessage, signInWithGoogle } from "@/lib/auth";
+import { authErrorMessage } from "@/lib/auth";
 import { MelodicaLogo } from "@/components/melodica/logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Music2, AudioLines, Heart } from "lucide-react";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -24,17 +23,16 @@ export const Route = createFileRoute("/login")({
 function LoginPage() {
   const navigate = useNavigate();
   const router = useRouter();
-  const [googleLoading, setGoogleLoading] = useState(false);
 
-  // Retornos de confirmação por email ou do OAuth do Google chegam em /login.
-  // O Supabase processa a sessão antes de getUser() resolver.
+   
+   
   useEffect(() => {
     let active = true;
     async function resumeSession() {
       try {
         const params = new URLSearchParams(window.location.search);
         if (params.has("error")) {
-          toast.error("O login com Google não está disponível na versão local. Entre com email e senha.");
+          toast.error("Não foi possível concluir o acesso. Tente novamente.");
           window.history.replaceState(window.history.state, "", window.location.pathname);
           return;
         }
@@ -54,20 +52,6 @@ function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [mascotOffset, setMascotOffset] = useState({ x: 0, y: 0, rotate: 0 });
-  const mascotPanelRef = useRef<HTMLDivElement>(null);
-
-  function handleMascotMouseMove(event: React.MouseEvent<HTMLDivElement>) {
-    const bounds = event.currentTarget.getBoundingClientRect();
-    const x = (event.clientX - bounds.left) / bounds.width - 0.5;
-    const y = (event.clientY - bounds.top) / bounds.height - 0.5;
-    setMascotOffset({ x: x * 22, y: y * 18, rotate: x * 7 });
-  }
-
-  function resetMascot() {
-    setMascotOffset({ x: 0, y: 0, rotate: 0 });
-  }
-
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     if (loading) return;
@@ -86,7 +70,7 @@ function LoginPage() {
         return;
       }
 
-      // Atualiza o cache das rotas antes de abrir o feed protegido.
+       
       await router.invalidate();
       await navigate({ to: "/feed", replace: true });
       toast.success("Bem-vindo de volta!");
@@ -98,94 +82,54 @@ function LoginPage() {
     }
   }
 
-  async function handleGoogle() {
-    if (googleLoading) return;
-    setGoogleLoading(true);
-    try {
-      const result = await signInWithGoogle();
-      if (result.error) {
-        toast.error(authErrorMessage(result.error, "Não foi possível entrar com o Google. Verifique se o provedor está habilitado no Supabase."));
-        return;
-      }
-      // Com OAuth por redirecionamento, /login retoma a sessão após o retorno.
-      if (result.redirected) return;
-      await router.invalidate();
-      await navigate({ to: "/feed", replace: true });
-    } catch (error) {
-      console.error("Erro no login Google:", error);
-      toast.error(authErrorMessage(error, "Não foi possível entrar com o Google."));
-    } finally {
-      setGoogleLoading(false);
-    }
-  }
-
   return (
-    <div className="min-h-screen bg-background text-foreground lg:grid lg:grid-cols-2">
-      <aside className="relative hidden min-h-screen overflow-hidden bg-[#08090d] text-white lg:flex lg:flex-col lg:justify-between lg:p-12 xl:p-16">
-        <div className="absolute -left-28 top-24 h-80 w-80 rounded-full bg-blue-500/20 blur-3xl" />
-        <div className="absolute -bottom-20 -right-16 h-96 w-96 rounded-full bg-cyan-400/10 blur-3xl" />
-        <Link to="/" aria-label="Melodica início" className="relative z-10 w-fit rounded-full bg-white px-4 py-2">
-          <MelodicaLogo />
+    <div className="melodica-auth-panel min-h-screen lg:grid lg:grid-cols-[minmax(380px,0.95fr)_minmax(480px,1.05fr)]">
+      <aside className="melodica-auth-aside relative hidden min-h-screen flex-col justify-between overflow-hidden px-10 py-9 text-white lg:flex xl:px-16 xl:py-12">
+        <Link to="/" aria-label="Melodica — início" className="inline-flex w-fit items-center gap-3 text-[22px] font-bold tracking-tight">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10"><img src="/melodica-logo.png" alt="" className="h-9 w-9 object-contain" /></span>
+          Melodica
         </Link>
-        <div className="relative z-10 mx-auto flex w-full max-w-lg flex-col items-center text-center">
-          <div
-            ref={mascotPanelRef}
-            onMouseMove={handleMascotMouseMove}
-            onMouseLeave={resetMascot}
-            className="relative mb-10 flex h-72 w-72 items-center justify-center rounded-[3rem] border border-white/10 bg-white/[0.04] shadow-2xl shadow-blue-950/40 sm:h-80 sm:w-80"
-            aria-label="Mascote animada da Melodica; acompanha o movimento do cursor"
-          >
-            <div className="absolute inset-5 rounded-[2.4rem] border border-white/10" />
-            <div className="absolute h-52 w-52 rounded-full bg-[#25b8f4]/10 blur-2xl" />
-            <img
-              src="/melodica-logo.png"
-              alt="Mascote da Melodica"
-              draggable={false}
-              className="relative z-10 h-60 w-60 select-none object-contain drop-shadow-[0_0_34px_rgba(37,184,244,0.22)] sm:h-64 sm:w-64"
-              style={{
-                transform: `translate3d(${mascotOffset.x}px, ${mascotOffset.y}px, 0) rotate(${mascotOffset.rotate}deg)`,
-                transition: "transform 140ms ease-out",
-                willChange: "transform",
-              }}
-            />
-            <AudioLines className="pointer-events-none absolute -right-7 top-8 h-16 w-16 text-[#25b8f4] animate-pulse" strokeWidth={1.6} />
-            <AudioLines className="pointer-events-none absolute -left-7 bottom-8 h-14 w-14 -rotate-180 text-[#25b8f4] animate-pulse" strokeWidth={1.6} />
+        <div className="mx-auto w-full max-w-[450px] py-8">
+          <p className="mb-5 text-xs font-semibold uppercase tracking-[0.14em] text-[#89d1ed]">SUA COMUNIDADE MUSICAL</p>
+          <h2 className="max-w-[440px] text-[42px] font-semibold leading-[1.13] tracking-[-0.055em] xl:text-[52px]">Música boa é melhor quando a gente compartilha.</h2>
+          <p className="mt-6 max-w-[360px] text-[15px] leading-7 text-slate-300">Descubra novos artistas, conheça outros músicos e troque ideias sobre o que você mais gosta de ouvir.</p>
+          <div className="melodica-auth-paper mt-12 flex max-w-[400px] items-center gap-4 rounded-[18px] p-4">
+            <div className="melodica-record relative flex h-[86px] w-[86px] shrink-0 items-center justify-center rounded-full border border-white/10 shadow-[0_8px_20px_rgba(0,0,0,.14)]">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#60bde2]"><span className="h-2 w-2 rounded-full bg-[#193042]" /></span>
+            </div>
+            <div className="min-w-0">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-[#89d1ed]">Agora é sua vez</span>
+              <p className="mt-1 text-[17px] font-semibold">Faça parte da conversa.</p>
+              <p className="mt-1 text-xs leading-5 text-slate-300">O próximo som favorito pode aparecer por aqui.</p>
+            </div>
           </div>
-          <p className="mb-4 text-xs font-bold uppercase tracking-[0.3em] text-[#25b8f4]">Sua comunidade musical</p>
-          <h2 className="text-4xl font-bold leading-tight xl:text-5xl">A música conecta. <br />A comunidade aproxima.</h2>
-          <p className="mt-5 max-w-md text-base leading-7 text-slate-400">Encontre pessoas que curtem os mesmos sons, compartilhe descobertas e evolua junto com outros músicos.</p>
         </div>
-        <div className="relative z-10 flex items-center justify-between text-xs text-slate-500">
-          <span>© 2026 Melodica</span><span>Feito para quem vive música.</span>
-        </div>
+        <p className="text-xs text-slate-400">© 2026 Melodica · Feito para quem vive música.</p>
       </aside>
 
-      <main className="flex min-h-screen flex-col px-5 py-6 sm:px-10 lg:px-12 xl:px-20">
-        <header className="flex items-center justify-between lg:justify-end">
-          <Link to="/" className="lg:hidden" aria-label="Início da Melodica"><MelodicaLogo /></Link>
-          <p className="text-sm text-muted-foreground">Novo por aqui? <Link to="/register" className="ml-1 font-semibold text-blue-600 hover:underline">Criar conta</Link></p>
+      <main className="flex min-h-screen flex-col px-6 py-7 sm:px-10 lg:px-12 xl:px-20">
+        <header className="flex items-center justify-between gap-3 lg:justify-end">
+          <Link to="/" className="lg:hidden" aria-label="Melodica — início"><MelodicaLogo /></Link>
+          <p className="text-sm text-muted-foreground">Ainda não tem conta? <Link to="/register" className="ml-1 font-semibold text-primary hover:underline">Cadastre-se</Link></p>
         </header>
-        <section className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center py-12">
-          <div className="mb-8">
-            <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-soft text-blue-600"><Music2 className="h-6 w-6" /></div>
-            <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Bem-vindo de volta!</h1>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">Entre na sua conta para continuar participando das suas comunidades musicais.</p>
-          </div>
-          <form onSubmit={handleSubmit} className="space-y-5">
+        <section className="mx-auto flex w-full max-w-[404px] flex-1 flex-col justify-center py-12">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.12em] text-primary">BOAS-VINDAS</p>
+          <h1 className="text-[32px] font-bold leading-tight text-ink sm:text-[36px]">Que bom ter você de volta.</h1>
+          <p className="mt-3 text-[14px] leading-6 text-muted-foreground">Entre para continuar de onde a música parou.</p>
+          <form onSubmit={handleSubmit} className="mt-9 space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-foreground">Email</Label>
-              <Input id="email" type="email" autoComplete="email" placeholder="voce@exemplo.com" required value={email} onChange={(e) => setEmail(e.target.value)} className="h-12 rounded-xl border-border bg-surface px-4 shadow-sm focus-visible:bg-card" />
+              <Label htmlFor="email" className="font-semibold text-foreground">Email</Label>
+              <Input id="email" type="email" autoComplete="email" placeholder="seuemail@exemplo.com" required value={email} onChange={(e) => setEmail(e.target.value)} className="h-12 rounded-lg border-input bg-card px-4 text-sm" />
             </div>
             <div className="space-y-2">
-              <div className="flex items-center justify-between"><Label htmlFor="password" className="text-foreground">Senha</Label><Link to="/forgot-password" className="text-xs font-medium text-blue-600 hover:underline">Esqueceu a senha?</Link></div>
-              <Input id="password" type="password" autoComplete="current-password" placeholder="Digite sua senha" required value={password} onChange={(e) => setPassword(e.target.value)} className="h-12 rounded-xl border-border bg-surface px-4 shadow-sm focus-visible:bg-card" />
+              <div className="flex items-center justify-between gap-2"><Label htmlFor="password" className="font-semibold text-foreground">Senha</Label><Link to="/forgot-password" className="text-xs font-semibold text-primary hover:underline">Esqueceu a senha?</Link></div>
+              <Input id="password" type="password" autoComplete="current-password" placeholder="Digite sua senha" required value={password} onChange={(e) => setPassword(e.target.value)} className="h-12 rounded-lg border-input bg-card px-4 text-sm" />
             </div>
-            <Button type="submit" className="h-12 w-full rounded-xl bg-[#2563eb] text-sm font-semibold shadow-lg shadow-blue-600/20 hover:bg-blue-700" disabled={loading || googleLoading}>{loading ? "Entrando..." : "Entrar na Melodica"}</Button>
+            <Button type="submit" className="h-12 w-full rounded-lg text-sm font-semibold" disabled={loading}>{loading ? "Entrando..." : "Entrar"}</Button>
           </form>
-          <p className="mt-5 text-center text-xs text-muted-foreground">Versão local: entre com email e senha. O login Google não está habilitado.</p>
-          <p className="mt-8 text-center text-xs leading-5 text-muted-foreground">Ao entrar, você concorda com os termos de uso e a política de privacidade da Melodica.</p>
+          <p className="mt-8 text-center text-xs leading-5 text-muted-foreground">Um espaço para descobrir, aprender e compartilhar música.</p>
         </section>
-        <footer className="pb-2 text-center text-xs text-muted-foreground lg:text-left">Sua próxima descoberta musical começa aqui. <Heart className="inline h-3 w-3 text-blue-500" fill="currentColor" /></footer>
+        <footer className="pb-2 text-center text-[11px] text-muted-foreground lg:text-right">Melodica © 2026</footer>
       </main>
     </div>
   );
@@ -210,8 +154,8 @@ export function AuthShell({
         </Link>
       </header>
       <main className="flex flex-1 items-start justify-center px-4 pb-16">
-        <div className="w-full max-w-md rounded-xl border bg-card p-6 shadow-[var(--shadow-card)] sm:p-8">
-          <h1 className="text-xl font-semibold text-ink">{title}</h1>
+        <div className="w-full max-w-lg rounded-[18px] border bg-card p-6 sm:p-9">
+          <h1 className="text-2xl font-semibold text-ink">{title}</h1>
           <p className="mt-1 mb-6 text-sm text-muted-foreground">{subtitle}</p>
           {children}
           <p className="mt-6 text-center text-sm text-muted-foreground">{footer}</p>

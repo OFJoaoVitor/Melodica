@@ -88,8 +88,8 @@ function CommunityProfilePage() {
           </div>
         ) : (
           <>
-            <section className="overflow-hidden rounded-xl border bg-card">
-              <div className="relative h-36 w-full sm:h-52" style={{ backgroundColor: community.accent ?? "#2563eb" }}>
+            <section className="overflow-hidden rounded-[18px] border bg-card">
+              <div className="relative h-36 w-full sm:h-52" style={{ backgroundColor: community.accent ?? "#147fae" }}>
                 {community.banner_url && <img src={community.banner_url} alt={`Capa da comunidade ${community.name}`} className="h-full w-full object-cover" />}
                 {!community.banner_url && <div className="absolute inset-0 flex items-center justify-end pr-10 opacity-20"><Music2 className="h-28 w-28 text-white" aria-hidden /></div>}
               </div>
@@ -97,7 +97,7 @@ function CommunityProfilePage() {
                 <div className="-mt-9 flex flex-wrap items-end justify-between gap-3 sm:-mt-12">
                   <Avatar className="relative z-10 h-[76px] w-[76px] border-4 border-card bg-card shadow-sm sm:h-24 sm:w-24">
                     {community.avatar_url && <AvatarImage src={community.avatar_url} alt={`Foto de ${community.name}`} className="object-cover" />}
-                    <AvatarFallback className="font-semibold text-white" style={{ backgroundColor: community.accent ?? "#2563eb" }}>
+                    <AvatarFallback className="font-semibold text-white" style={{ backgroundColor: community.accent ?? "#147fae" }}>
                       {initials(community.name)}
                     </AvatarFallback>
                   </Avatar>

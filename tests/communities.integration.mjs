@@ -1,4 +1,4 @@
-/** Testes isolados da API local de comunidades, sem alterar o banco real. */
+ 
 import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, copyFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -32,7 +32,7 @@ try {
   let ready=false;
   for(let tries=0;tries<75;tries++) {
     if(server.exitCode!==null) throw new Error('Servidor terminou antes dos testes.');
-    try {const r=await request('/health');if(r.status===200){ready=true;break;}} catch { /* inicialização */ }
+    try {const r=await request('/health');if(r.status===200){ready=true;break;}} catch {  }
     await sleep(80);
   }
   assert.ok(ready,'Servidor não inicializou');
@@ -71,7 +71,7 @@ try {
   const otherMemberQuery=`?filters=${encodeURIComponent(JSON.stringify([{column:'community_id',operator:'eq',value:community.id},{column:'user_id',operator:'eq',value:other.id}]))}`;
   assert.equal((await request('/data/community_members'+otherMemberQuery,'DELETE',undefined,other.cookie)).status,200);
   assert.equal((await request('/data/communities'+qs,'GET',undefined,owner.cookie)).body.data[0].member_count,1);
-  // Os campos de foto e capa aceitam somente arquivos realmente enviados ao backend.
+   
   const image=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+XbCwAAAAASUVORK5CYII=','base64');
   const upload=await fetch(base+'/uploads',{method:'POST',headers:{Cookie:owner.cookie,'Content-Type':'image/png'},body:image});
   const uploadResult=await upload.json();

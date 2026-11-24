@@ -1,4 +1,4 @@
-/** Recuperação administrativa de senha para este banco local. */
+ 
 import readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 import { randomBytes,scryptSync } from 'node:crypto';

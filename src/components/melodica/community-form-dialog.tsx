@@ -60,7 +60,7 @@ export function CommunityFormDialog({ open, onOpenChange, community, onCreated }
       if (title.length < 3 || title.length > 60) throw new Error("Informe um nome de 3 a 60 caracteres.");
       if (handle.length < 3) throw new Error("O identificador deve ter pelo menos 3 caracteres.");
       if (description.trim().length > 500) throw new Error("A descrição deve ter no máximo 500 caracteres.");
-      // Só o criador pode editar: permissão validada novamente no backend.
+       
       const avatar_url = avatarFile ? await uploadImageFile(avatarFile) : avatarRemoved ? null : community?.avatar_url ?? null;
       const banner_url = bannerFile ? await uploadImageFile(bannerFile) : bannerRemoved ? null : community?.banner_url ?? null;
       const fields = { name: title, description: description.trim(), category, accent, avatar_url, banner_url };

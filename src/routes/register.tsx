@@ -3,7 +3,7 @@ import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-r
 import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { authErrorMessage, signInWithGoogle } from "@/lib/auth";
+import { authErrorMessage } from "@/lib/auth";
 import { AuthShell } from "./login";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -94,9 +94,9 @@ function RegisterPage() {
     setLoading(true);
 
     try {
-      // No cadastro não existe sessão autenticada. A validação de nomes e emails
-      // duplicados ocorre no endpoint POST /api/auth/register, com restrições
-      // UNIQUE no SQLite. Nunca consulte /api/data/profiles antes do login.
+       
+       
+       
       const { data, error } = await supabase.auth.signUp({
         email: form.email.trim().toLowerCase(),
         password: form.password,
@@ -123,33 +123,13 @@ function RegisterPage() {
     } catch (error) {
       console.error("Erro ao cadastrar:", error);
       const message = authErrorMessage(error, "Não foi possível criar a conta agora.");
-      // Exibe no campo correspondente os conflitos identificados pelo backend.
+       
       if (/nome de usuário já está em uso/i.test(message)) {
         setErrors({ username: message });
       } else if (/já existe uma conta com esse email/i.test(message)) {
         setErrors({ email: message });
       }
       toast.error(message);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function handleGoogle() {
-    if (loading) return;
-    setLoading(true);
-    try {
-      const result = await signInWithGoogle();
-      if (result.error) {
-        toast.error(authErrorMessage(result.error, "Não foi possível continuar com o Google. Verifique a configuração do provedor."));
-        return;
-      }
-      if (result.redirected) return;
-      await router.invalidate();
-      await navigate({ to: "/feed", replace: true });
-    } catch (error) {
-      console.error("Erro no cadastro Google:", error);
-      toast.error(authErrorMessage(error, "Não foi possível continuar com o Google."));
     } finally {
       setLoading(false);
     }
@@ -287,9 +267,6 @@ function RegisterPage() {
         </Button>
       </form>
 
-      <p className="mt-5 text-center text-xs text-muted-foreground">
-        Versão local: contas por email e senha, sem necessidade do Lovable.
-      </p>
     </AuthShell>
   );
 }

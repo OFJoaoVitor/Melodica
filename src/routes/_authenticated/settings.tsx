@@ -84,7 +84,7 @@ function SettingsPage() {
         try { return !["http:", "https:"].includes(new URL(value).protocol); }
         catch { return true; }
       })) throw new Error("Os links precisam começar com http:// ou https://.");
-      // O backend armazena os arquivos e devolve links locais persistentes.
+       
       const avatarUrl = avatarFile ? await uploadImageFile(avatarFile) : form.avatar_url;
       const bannerUrl = bannerFile ? await uploadImageFile(bannerFile) : form.banner_url;
       const { error } = await supabase
@@ -107,9 +107,9 @@ function SettingsPage() {
 
   return (
     <AppShell>
-      <div className="mx-auto max-w-2xl space-y-6">
+      <div className="mx-auto max-w-[724px] space-y-6">
         <header className="melodica-page-heading py-1">
-          <h1 className="font-display text-2xl font-bold text-ink">Configurações<span className="text-primary">.</span></h1>
+          <h1 className="text-[26px] font-bold text-ink sm:text-[30px]">Configurações</h1>
           <p className="mt-1.5 text-sm text-muted-foreground">Seu perfil, seu som, do seu jeito.</p>
           <Link to="/profile" className="mt-2 inline-flex text-sm font-medium text-primary hover:underline">Ver meu perfil →</Link>
         </header>
@@ -117,7 +117,7 @@ function SettingsPage() {
         <section className="melodica-preference-panel rounded-2xl border bg-card px-5 py-5 sm:px-6" aria-label="Preferência de aparência">
           <div className="mb-4 flex items-center gap-3">
             <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-soft text-primary"><Palette className="h-5 w-5" /></span>
-            <div><h2 className="text-sm font-bold text-ink">Aparência do Melodica</h2><p className="text-xs text-muted-foreground">Escolha como sua experiência musical aparece nesta tela.</p></div>
+            <div><h2 className="text-sm font-bold text-ink">Aparência da Melodica</h2><p className="text-xs text-muted-foreground">Escolha como sua experiência musical aparece nesta tela.</p></div>
           </div>
           <div className="grid grid-cols-2 gap-3" role="group" aria-label="Tema da interface">
             <button type="button" onClick={() => setTheme("light")} aria-pressed={theme === "light"} className={`melodica-theme-choice flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-semibold transition ${theme === "light" ? "border-primary bg-primary-soft text-primary ring-1 ring-primary/30" : "bg-surface text-muted-foreground hover:border-primary/40"}`}><Sun className="h-4 w-4" /> Modo claro</button>
@@ -130,7 +130,7 @@ function SettingsPage() {
           <Skeleton className="h-96 w-full rounded-lg" />
         ) : (
           <>
-            <section className="rounded-lg border bg-card p-5">
+            <section className="rounded-[18px] border bg-card p-5">
               <h2 className="text-sm font-semibold text-ink">Conta</h2>
               <dl className="mt-3 space-y-2 text-sm">
                 <div className="flex justify-between gap-4">
@@ -144,14 +144,14 @@ function SettingsPage() {
               </dl>
             </section>
 
-            <section className="rounded-lg border border-primary/20 bg-card p-5">
+            <section className="rounded-[18px] border bg-card p-5">
               <h2 className="text-sm font-semibold text-ink">Meus interesses musicais</h2>
               <p className="mt-2 text-sm text-muted-foreground">Atualize gêneros, instrumentos, artistas e assuntos que personalizam o feed “Para você”.</p>
               <Button asChild variant="outline" className="mt-4"><Link to="/interests">Editar meus interesses musicais</Link></Button>
             </section>
 
             <form
-              className="space-y-4 rounded-lg border bg-card p-5"
+              className="space-y-4 rounded-[18px] border bg-card p-5"
               onSubmit={(event) => {
                 event.preventDefault();
                 save.mutate();
